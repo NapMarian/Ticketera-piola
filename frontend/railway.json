@@ -5,6 +5,6 @@
     "buildCommand": "npm install && npm run build"
   },
   "deploy": {
-    "startCommand": "npx serve dist -s -l $PORT"
+    "startCommand": "node node_modules/serve/build/main.js dist -s -l $PORT"
   }
 }
