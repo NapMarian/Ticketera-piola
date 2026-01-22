@@ -11,7 +11,15 @@
       "Bash(python:*)",
       "Bash(ping:*)",
       "Bash(tasklist /FI \"WINDOWTITLE eq backend*\")",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(Select-String \"node_modules\")",
+      "Bash(Measure-Object -Line)",
+      "Bash(Select-Object -ExpandProperty Lines)",
+      "Bash(Select-String -Pattern \"^backend/\\\\.env$|database\\\\.sqlite\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)"
     ]
   }
 }
