@@ -15,6 +15,91 @@ body {
   @apply bg-gray-900 text-gray-100;
 }
 
+/* ============================================
+   FORM ELEMENTS - Light & Dark Mode Support
+   ============================================ */
+@layer base {
+  /* Base form element styles */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"],
+  textarea,
+  select {
+    @apply text-gray-900 bg-white border-gray-300;
+  }
+
+  /* Dark mode form elements */
+  .dark input[type="text"],
+  .dark input[type="email"],
+  .dark input[type="password"],
+  .dark input[type="number"],
+  .dark input[type="tel"],
+  .dark input[type="url"],
+  .dark input[type="search"],
+  .dark input[type="date"],
+  .dark input[type="time"],
+  .dark input[type="datetime-local"],
+  .dark textarea,
+  .dark select {
+    @apply text-white bg-gray-700 border-gray-600;
+  }
+
+  /* Placeholder styles */
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-400;
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    @apply text-gray-500;
+  }
+
+  /* Select options */
+  select option {
+    @apply bg-white text-gray-900;
+  }
+
+  .dark select option {
+    @apply bg-gray-700 text-white;
+  }
+
+  /* Autofill styles to prevent browser default colors */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    -webkit-text-fill-color: #111827;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus,
+  .dark textarea:-webkit-autofill,
+  .dark textarea:-webkit-autofill:hover,
+  .dark textarea:-webkit-autofill:focus,
+  .dark select:-webkit-autofill,
+  .dark select:-webkit-autofill:hover,
+  .dark select:-webkit-autofill:focus {
+    -webkit-text-fill-color: #fff;
+    -webkit-box-shadow: 0 0 0px 1000px #374151 inset;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -25,13 +110,25 @@ body {
   background: #f1f5f9;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 3px;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 /* Animations */
@@ -55,15 +152,75 @@ body {
   transform: translateX(100%);
 }
 
-/* Status badge colors */
+/* ============================================
+   STATUS BADGES - Light & Dark Mode
+   ============================================ */
 .status-new { @apply bg-blue-100 text-blue-800; }
 .status-in_progress { @apply bg-yellow-100 text-yellow-800; }
 .status-waiting { @apply bg-purple-100 text-purple-800; }
 .status-resolved { @apply bg-green-100 text-green-800; }
 .status-closed { @apply bg-gray-100 text-gray-800; }
 
-/* Priority badge colors */
+.dark .status-new { @apply bg-blue-900/50 text-blue-300; }
+.dark .status-in_progress { @apply bg-yellow-900/50 text-yellow-300; }
+.dark .status-waiting { @apply bg-purple-900/50 text-purple-300; }
+.dark .status-resolved { @apply bg-green-900/50 text-green-300; }
+.dark .status-closed { @apply bg-gray-700 text-gray-300; }
+
+/* ============================================
+   PRIORITY BADGES - Light & Dark Mode
+   ============================================ */
 .priority-low { @apply bg-green-100 text-green-800; }
 .priority-medium { @apply bg-blue-100 text-blue-800; }
 .priority-high { @apply bg-orange-100 text-orange-800; }
 .priority-urgent { @apply bg-red-100 text-red-800; }
+
+.dark .priority-low { @apply bg-green-900/50 text-green-300; }
+.dark .priority-medium { @apply bg-blue-900/50 text-blue-300; }
+.dark .priority-high { @apply bg-orange-900/50 text-orange-300; }
+.dark .priority-urgent { @apply bg-red-900/50 text-red-300; }
+
+/* ============================================
+   ADDITIONAL DARK MODE FIXES
+   ============================================ */
+/* Cards and containers */
+.dark .bg-white {
+  @apply bg-gray-800;
+}
+
+/* Text colors */
+.dark .text-gray-800 {
+  @apply text-white;
+}
+
+.dark .text-gray-700 {
+  @apply text-gray-200;
+}
+
+.dark .text-gray-600 {
+  @apply text-gray-300;
+}
+
+/* Background colors for public pages */
+.dark .bg-gray-50 {
+  @apply bg-gray-900;
+}
+
+/* Borders */
+.dark .border-gray-200 {
+  @apply border-gray-700;
+}
+
+.dark .border-gray-300 {
+  @apply border-gray-600;
+}
+
+/* Hover states */
+.dark .hover\:bg-gray-50:hover {
+  @apply bg-gray-700;
+}
+
+/* Focus rings */
+.dark .focus\:ring-primary-500:focus {
+  --tw-ring-color: #0693e3;
+}
