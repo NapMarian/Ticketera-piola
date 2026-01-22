@@ -11,7 +11,11 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build the app
+# Build arg for API URL (Railway passes env vars as build args)
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
+# Build the app with the env var
 RUN npm run build
 
 # Expose port
