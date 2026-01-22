@@ -10,7 +10,9 @@ class SocketService {
   connect(token = null) {
     if (this.socket?.connected) return
 
-    const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || undefined
+    // Production Socket URL - hardcoded for Railway deployment
+    const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') ||
+      (import.meta.env.PROD ? 'https://ticketera-piola-production.up.railway.app' : undefined)
 
     this.socket = io(socketUrl, {
       auth: token ? { token } : {},
