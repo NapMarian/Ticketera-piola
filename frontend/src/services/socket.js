@@ -10,7 +10,9 @@ class SocketService {
   connect(token = null) {
     if (this.socket?.connected) return
 
-    this.socket = io({
+    const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || undefined
+
+    this.socket = io(socketUrl, {
       auth: token ? { token } : {},
       transports: ['websocket', 'polling']
     })

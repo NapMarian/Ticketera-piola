@@ -25,13 +25,25 @@ const server = http.createServer(app);
 
 // CORS origin configuration
 const corsOrigin = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = corsOrigin.split(',').map(o => o.trim());
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc)
+    if (!origin) return callback(null, true);
+    // Allow if origin matches any allowed origin or is a railway.app domain
+    if (allowedOrigins.includes(origin) || origin.endsWith('.railway.app')) {
+      return callback(null, true);
+    }
+    callback(null, true); // Allow all in production for demo purposes
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+};
 
 // Socket.io setup
 const io = new Server(server, {
-  cors: {
-    origin: corsOrigin,
-    methods: ['GET', 'POST']
-  }
+  cors: corsOptions
 });
 
 // Setup socket handlers
@@ -44,10 +56,7 @@ app.set('io', io);
 notificationService.setIO(io);
 
 // Middleware
-app.use(cors({
-  origin: corsOrigin,
-  credentials: true
-}));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
