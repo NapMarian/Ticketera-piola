@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: ticketera-backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      - DB_PATH=/app/data/ticketera.db
+      - CORS_ORIGIN=http://localhost
+    volumes:
+      - ticketera-data:/app/data
+    networks:
+      - ticketera-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: ticketera-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - ticketera-network
+
+volumes:
+  ticketera-data:
+    driver: local
+
+networks:
+  ticketera-network:
+    driver: bridge

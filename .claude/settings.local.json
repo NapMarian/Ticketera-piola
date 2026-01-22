@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(curl:*)",
+      "Bash(python:*)",
+      "Bash(ping:*)",
+      "Bash(tasklist /FI \"WINDOWTITLE eq backend*\")",
+      "Bash(dir:*)"
+    ]
+  }
+}
