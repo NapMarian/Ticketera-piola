@@ -58,16 +58,8 @@ CannedResponse.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 // Sync database
 const syncDatabase = async (force = false) => {
   try {
-    // Use force only when explicitly requested, otherwise just sync without altering
-    await sequelize.sync({ force });
-
-    // Manually add client_id column to tickets if it doesn't exist (SQLite workaround)
-    try {
-      await sequelize.query("ALTER TABLE tickets ADD COLUMN client_id INTEGER REFERENCES clients(id)");
-      console.log('Added client_id column to tickets table');
-    } catch (e) {
-      // Column already exists or table doesn't exist yet - that's fine
-    }
+    // Use alter: true to update schema without losing data (works for both SQLite and PostgreSQL)
+    await sequelize.sync({ force, alter: !force });
     console.log('Database synchronized successfully');
 
     // Create default SLA configs if they don't exist
