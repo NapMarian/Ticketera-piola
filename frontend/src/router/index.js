@@ -100,6 +100,12 @@ const routes = [
     component: () => import('@/views/staff/CannedResponses.vue'),
     meta: { requiresAuth: true, roles: ['admin', 'agent'] }
   },
+  {
+    path: '/staff/ranking',
+    name: 'staff-ranking',
+    component: () => import('@/views/staff/Ranking.vue'),
+    meta: { requiresAuth: true, roles: ['admin', 'agent'] }
+  },
 
   // 404
   {

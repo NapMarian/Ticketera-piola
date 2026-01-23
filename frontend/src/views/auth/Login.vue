@@ -1,69 +1,69 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center py-12 px-4">
+  <div class="min-h-screen bg-background-primary flex items-center justify-center py-12 px-4">
     <div class="max-w-md w-full">
       <!-- Logo -->
       <div class="text-center mb-8">
-        <router-link to="/" class="inline-flex items-center gap-2">
-          <svg class="w-12 h-12 text-white" viewBox="0 0 100 100" fill="currentColor">
-            <rect width="100" height="100" rx="20" fill="currentColor"/>
-            <path d="M25 35h50v5H25zM25 45h50v5H25zM25 55h30v5H25zM65 50l15 15-15 15" stroke="#6366f1" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="text-3xl font-bold text-white">C-Team</span>
+        <router-link to="/" class="inline-block">
+          <img
+            src="/logo-letra-blanca-sin-fondo-scaled-e1755635743469-2048x1210.png"
+            alt="C-Team"
+            class="h-12 w-auto mx-auto"
+          />
         </router-link>
-        <p class="mt-2 text-white/70">Panel de administración</p>
+        <p class="mt-3 text-gray-500">Panel de administracion</p>
       </div>
 
       <!-- Login form -->
-      <div class="bg-white rounded-xl shadow-xl p-8">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Iniciar sesión</h1>
+      <div class="bg-background-secondary rounded-xl border border-border p-8">
+        <h1 class="text-xl font-semibold text-white mb-6 text-center">Iniciar sesion</h1>
 
         <form @submit.prevent="handleLogin">
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
             <input
               v-model="email"
               type="email"
               required
               autofocus
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors"
               placeholder="tu@cteamglobal.com"
             />
           </div>
 
           <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+            <label class="block text-sm font-medium text-gray-400 mb-2">Contrasena</label>
             <input
               v-model="password"
               type="password"
               required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors"
               placeholder="••••••••"
             />
           </div>
 
           <!-- Error -->
-          <div v-if="error" class="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+          <div v-if="error" class="mb-4 p-3 bg-error-bg border border-error/30 text-error-light rounded-lg text-sm">
             {{ error }}
           </div>
 
           <button
             type="submit"
             :disabled="authStore.loading"
-            class="w-full py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors"
+            class="w-full py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 transition-colors"
           >
             <span v-if="authStore.loading" class="flex items-center justify-center gap-2">
               <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
               </svg>
-              Iniciando sesión...
+              Iniciando sesion...
             </span>
             <span v-else>Ingresar</span>
           </button>
         </form>
 
         <div class="mt-6 text-center">
-          <router-link to="/" class="text-gray-500 hover:text-gray-700 text-sm">
+          <router-link to="/" class="text-gray-500 hover:text-gray-400 text-sm transition-colors">
             &larr; Volver al inicio
           </router-link>
         </div>
