@@ -3,38 +3,38 @@
     <div class="max-w-5xl">
       <!-- Header -->
       <div class="flex items-center justify-between mb-6">
-        <p class="text-gray-600 dark:text-gray-400">Gestiona los usuarios del sistema</p>
+        <p class="text-gray-500">Gestiona los usuarios del sistema</p>
         <button
           @click="showModal = true; editingId = null; resetForm()"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+          class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
         >
           + Nuevo usuario
         </button>
       </div>
 
       <!-- List -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+      <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border overflow-hidden">
         <table class="w-full">
-          <thead class="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600">
+          <thead class="border-b border-border">
             <tr>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Usuario</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Email</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Rol</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Estado</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Acciones</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Usuario</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Email</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Rol</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Estado</th>
+              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Acciones</th>
             </tr>
           </thead>
-          <tbody class="divide-y dark:divide-gray-700">
-            <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <tbody class="divide-y divide-border">
+            <tr v-for="user in users" :key="user.id" class="hover:bg-surface-hover">
               <td class="px-4 py-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-full flex items-center justify-center font-medium">
+                  <div class="w-10 h-10 bg-primary-900 text-primary-400 rounded-full flex items-center justify-center font-medium">
                     {{ getInitials(user.name) }}
                   </div>
-                  <span class="font-medium text-gray-800 dark:text-white">{{ user.name }}</span>
+                  <span class="font-medium text-white">{{ user.name }}</span>
                 </div>
               </td>
-              <td class="px-4 py-4 text-gray-600 dark:text-gray-300">{{ user.email }}</td>
+              <td class="px-4 py-4 text-gray-400">{{ user.email }}</td>
               <td class="px-4 py-4">
                 <span
                   class="px-2 py-1 rounded-full text-xs font-medium"
@@ -46,7 +46,7 @@
               <td class="px-4 py-4">
                 <span
                   class="px-2 py-1 rounded-full text-xs font-medium"
-                  :class="user.isActive ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300'"
+                  :class="user.isActive ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-300'"
                 >
                   {{ user.isActive ? 'Activo' : 'Inactivo' }}
                 </span>
@@ -55,7 +55,7 @@
                 <div class="flex items-center gap-2">
                   <button
                     @click="editUser(user)"
-                    class="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                    class="p-2 text-gray-400 hover:text-primary-400 transition-colors"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -64,7 +64,7 @@
                   <button
                     v-if="user.id !== authStore.user?.id"
                     @click="toggleActive(user)"
-                    class="p-2 text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
+                    class="p-2 text-gray-400 hover:text-orange-400 transition-colors"
                     :title="user.isActive ? 'Desactivar' : 'Activar'"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,57 +85,57 @@
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       @click.self="showModal = false"
     >
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+      <div class="bg-background-tertiary rounded-xl border border-border shadow-xl max-w-md w-full p-6">
+        <h2 class="text-xl font-semibold text-white mb-4">
           {{ editingId ? 'Editar usuario' : 'Nuevo usuario' }}
         </h2>
 
         <form @submit.prevent="saveUser">
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre *</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Nombre *</label>
             <input
               v-model="form.name"
               type="text"
               required
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
             />
           </div>
 
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Email *</label>
             <input
               v-model="form.email"
               type="email"
               required
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
             />
           </div>
 
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label class="block text-sm font-medium text-gray-400 mb-1">
               Contrasena {{ editingId ? '(dejar vacio para no cambiar)' : '*' }}
             </label>
             <input
               v-model="form.password"
               type="password"
               :required="!editingId"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
             />
           </div>
 
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rol *</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Rol *</label>
             <select
               v-model="form.role"
               required
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
             >
               <option value="agent">Agente</option>
               <option value="admin">Administrador</option>
             </select>
           </div>
 
-          <div v-if="error" class="mb-4 p-3 bg-red-50 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg text-sm">
+          <div v-if="error" class="mb-4 p-3 bg-red-900/50 text-red-400 rounded-lg text-sm">
             {{ error }}
           </div>
 
@@ -143,14 +143,14 @@
             <button
               type="button"
               @click="showModal = false"
-              class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              class="px-4 py-2 bg-surface border border-border text-gray-400 rounded-lg hover:bg-surface-hover transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
               :disabled="saving"
-              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors"
+              class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 transition-colors"
             >
               {{ saving ? 'Guardando...' : 'Guardar' }}
             </button>
@@ -201,11 +201,11 @@ function getRoleLabel(role) {
 
 function getRoleClass(role) {
   const classes = {
-    admin: 'bg-purple-100 text-purple-800',
-    agent: 'bg-blue-100 text-blue-800',
-    client: 'bg-gray-100 text-gray-800'
+    admin: 'bg-purple-900/50 text-purple-300',
+    agent: 'bg-blue-900/50 text-blue-300',
+    client: 'bg-gray-800 text-gray-300'
   }
-  return classes[role] || 'bg-gray-100 text-gray-800'
+  return classes[role] || 'bg-gray-800 text-gray-300'
 }
 
 async function loadUsers() {

@@ -1,14 +1,14 @@
 <template>
   <div
-    class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 overflow-hidden"
+    class="absolute right-0 mt-2 w-80 bg-background-tertiary rounded-xl border border-border z-50 overflow-hidden"
     v-click-outside="() => $emit('close')"
   >
-    <div class="flex items-center justify-between px-4 py-3 border-b">
-      <h3 class="font-semibold text-gray-800">Notificaciones</h3>
+    <div class="flex items-center justify-between px-4 py-3 border-b border-border">
+      <h3 class="font-semibold text-white">Notificaciones</h3>
       <button
         v-if="store.unreadCount > 0"
         @click="store.markAllAsRead()"
-        class="text-sm text-primary-600 hover:text-primary-700"
+        class="text-sm text-primary-500 hover:text-primary-400"
       >
         Marcar todas como leídas
       </button>
@@ -25,8 +25,8 @@
       <div
         v-for="notification in store.notifications"
         :key="notification.id"
-        class="px-4 py-3 border-b hover:bg-gray-50 cursor-pointer transition-colors"
-        :class="{ 'bg-primary-50': !notification.isRead }"
+        class="px-4 py-3 border-b border-border hover:bg-surface-hover cursor-pointer transition-colors"
+        :class="{ 'bg-primary-500/10': !notification.isRead }"
         @click="handleClick(notification)"
       >
         <div class="flex items-start gap-3">
@@ -37,9 +37,9 @@
             <component :is="getIcon(notification.type)" class="w-4 h-4" />
           </div>
           <div class="flex-1 min-w-0">
-            <p class="font-medium text-gray-800 text-sm">{{ notification.title }}</p>
-            <p class="text-sm text-gray-600 truncate">{{ notification.message }}</p>
-            <p class="text-xs text-gray-400 mt-1">{{ formatTime(notification.createdAt) }}</p>
+            <p class="font-medium text-white text-sm">{{ notification.title }}</p>
+            <p class="text-sm text-gray-400 truncate">{{ notification.message }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ formatTime(notification.createdAt) }}</p>
           </div>
           <div
             v-if="!notification.isRead"
@@ -79,14 +79,14 @@ const vClickOutside = {
 
 function getIconClass(type) {
   const classes = {
-    ticket_created: 'bg-blue-100 text-blue-600',
-    ticket_assigned: 'bg-green-100 text-green-600',
-    new_message: 'bg-purple-100 text-purple-600',
-    sla_warning: 'bg-orange-100 text-orange-600',
-    sla_breach: 'bg-red-100 text-red-600',
-    ticket_resolved: 'bg-green-100 text-green-600'
+    ticket_created: 'bg-blue-500/20 text-blue-400',
+    ticket_assigned: 'bg-green-500/20 text-green-400',
+    new_message: 'bg-purple-500/20 text-purple-400',
+    sla_warning: 'bg-orange-500/20 text-orange-400',
+    sla_breach: 'bg-red-500/20 text-red-400',
+    ticket_resolved: 'bg-green-500/20 text-green-400'
   }
-  return classes[type] || 'bg-gray-100 text-gray-600'
+  return classes[type] || 'bg-surface text-gray-400'
 }
 
 function getIcon(type) {

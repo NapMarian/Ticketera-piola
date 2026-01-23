@@ -87,37 +87,37 @@
     <!-- Track ticket modal -->
     <div
       v-if="showTrackModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       @click.self="showTrackModal = false"
     >
-      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Seguir mi ticket</h2>
-        <p class="text-gray-600 mb-4">
+      <div class="bg-background-tertiary rounded-xl border border-border shadow-xl max-w-md w-full p-6">
+        <h2 class="text-xl font-semibold text-white mb-4">Seguir mi ticket</h2>
+        <p class="text-gray-400 mb-4">
           Ingresa el número de ticket o el enlace que recibiste por email.
         </p>
         <input
           v-model="trackInput"
           type="text"
           placeholder="CT-2024-00001 o enlace completo"
-          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent mb-4"
+          class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-transparent mb-4"
           @keyup.enter="trackTicket"
         />
         <div class="flex gap-3">
           <button
             @click="showTrackModal = false"
-            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            class="flex-1 px-4 py-2 border border-border text-gray-400 rounded-lg hover:bg-surface-hover transition-colors"
           >
             Cancelar
           </button>
           <button
             @click="trackTicket"
             :disabled="!trackInput.trim()"
-            class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors"
+            class="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 transition-colors"
           >
             Buscar
           </button>
         </div>
-        <p v-if="trackError" class="mt-3 text-red-500 text-sm">{{ trackError }}</p>
+        <p v-if="trackError" class="mt-3 text-red-400 text-sm">{{ trackError }}</p>
       </div>
     </div>
   </div>

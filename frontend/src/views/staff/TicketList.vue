@@ -5,9 +5,9 @@
       <div></div>
       <router-link
         to="/tickets/new"
-        class="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+        class="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
         Nuevo Ticket
@@ -15,15 +15,15 @@
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+    <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border p-4 mb-6">
       <div class="flex flex-wrap gap-4">
         <!-- Search -->
         <div class="flex-1 min-w-[200px]">
           <input
             v-model="filters.search"
             type="text"
-            placeholder="Buscar por número, título, cliente..."
-            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            placeholder="Buscar por numero, titulo, cliente..."
+            class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors"
             @input="debouncedSearch"
           />
         </div>
@@ -32,7 +32,7 @@
         <select
           v-model="filters.status"
           @change="loadTickets"
-          class="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          class="px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
         >
           <option value="">Todos los estados</option>
           <option value="new">Nuevo</option>
@@ -46,7 +46,7 @@
         <select
           v-model="filters.priority"
           @change="loadTickets"
-          class="px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          class="px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
         >
           <option value="">Todas las prioridades</option>
           <option value="urgent">Urgente</option>
@@ -59,7 +59,7 @@
         <button
           v-if="hasFilters"
           @click="clearFilters"
-          class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+          class="px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm"
         >
           Limpiar filtros
         </button>
@@ -67,54 +67,56 @@
     </div>
 
     <!-- Tickets table -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+    <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border overflow-hidden">
       <!-- Loading -->
       <div v-if="ticketStore.loading" class="p-8 text-center">
-        <svg class="w-10 h-10 animate-spin text-primary-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+        <svg class="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
         </svg>
-        <p class="text-gray-600 dark:text-gray-400">Cargando tickets...</p>
+        <p class="text-gray-500">Cargando tickets...</p>
       </div>
 
       <!-- Empty state -->
       <div v-else-if="tickets.length === 0" class="p-8 text-center">
-        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
-        </svg>
-        <p class="text-gray-500 dark:text-gray-400">No se encontraron tickets</p>
+        <div class="w-14 h-14 bg-surface rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+          </svg>
+        </div>
+        <p class="text-gray-500">No se encontraron tickets</p>
       </div>
 
       <!-- Table -->
       <table v-else class="w-full">
-        <thead class="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600">
+        <thead class="border-b border-border">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Ticket</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Cliente</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Estado</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Prioridad</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Agente</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">SLA</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase">Fecha</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prioridad</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Agente</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SLA</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+        <tbody class="divide-y divide-border">
           <tr
             v-for="ticket in tickets"
             :key="ticket.id"
             @click="goToTicket(ticket.id)"
-            class="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+            class="hover:bg-surface-hover cursor-pointer transition-colors"
           >
             <td class="px-4 py-4">
               <div>
-                <p class="font-medium text-gray-800 dark:text-white">{{ ticket.ticketNumber }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{{ ticket.title }}</p>
+                <p class="font-medium text-white">{{ ticket.ticketNumber }}</p>
+                <p class="text-sm text-gray-500 truncate max-w-xs">{{ ticket.title }}</p>
               </div>
             </td>
             <td class="px-4 py-4">
               <div>
-                <p class="text-gray-800 dark:text-white">{{ ticket.clientName }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ ticket.clientCompany || ticket.clientEmail }}</p>
+                <p class="text-white">{{ ticket.clientName }}</p>
+                <p class="text-sm text-gray-500">{{ ticket.clientCompany || ticket.clientEmail }}</p>
               </div>
             </td>
             <td class="px-4 py-4">
@@ -135,12 +137,12 @@
             </td>
             <td class="px-4 py-4">
               <div v-if="ticket.agent" class="flex items-center gap-2">
-                <div class="w-7 h-7 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-full flex items-center justify-center text-xs font-medium">
-                  {{ getInitials(ticket.agent.name) }}
+                <div class="w-7 h-7 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
+                  <span class="text-white text-xs font-medium">{{ getInitials(ticket.agent.name) }}</span>
                 </div>
-                <span class="text-sm text-gray-700 dark:text-gray-300">{{ ticket.agent.name }}</span>
+                <span class="text-sm text-gray-300">{{ ticket.agent.name }}</span>
               </div>
-              <span v-else class="text-sm text-gray-400 dark:text-gray-500">Sin asignar</span>
+              <span v-else class="text-sm text-gray-600">Sin asignar</span>
             </td>
             <td class="px-4 py-4">
               <span
@@ -151,7 +153,7 @@
                 {{ ticket.slaStatus.label }}
               </span>
             </td>
-            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
+            <td class="px-4 py-4 text-sm text-gray-500">
               {{ timeAgo(ticket.createdAt) }}
             </td>
           </tr>
@@ -159,8 +161,8 @@
       </table>
 
       <!-- Pagination -->
-      <div v-if="pagination.totalPages > 1" class="px-4 py-3 border-t dark:border-gray-700 flex items-center justify-between">
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+      <div v-if="pagination.totalPages > 1" class="px-4 py-3 border-t border-border flex items-center justify-between">
+        <p class="text-sm text-gray-500">
           Mostrando {{ (pagination.page - 1) * pagination.limit + 1 }} -
           {{ Math.min(pagination.page * pagination.limit, pagination.total) }} de {{ pagination.total }}
         </p>
@@ -168,14 +170,14 @@
           <button
             @click="changePage(pagination.page - 1)"
             :disabled="pagination.page === 1"
-            class="px-3 py-1 border dark:border-gray-600 rounded text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-100 dark:hover:bg-gray-700"
+            class="px-3 py-1 bg-surface border border-border rounded text-sm text-gray-300 disabled:opacity-50 hover:bg-surface-hover transition-colors"
           >
             Anterior
           </button>
           <button
             @click="changePage(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
-            class="px-3 py-1 border dark:border-gray-600 rounded text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-100 dark:hover:bg-gray-700"
+            class="px-3 py-1 bg-surface border border-border rounded text-sm text-gray-300 disabled:opacity-50 hover:bg-surface-hover transition-colors"
           >
             Siguiente
           </button>

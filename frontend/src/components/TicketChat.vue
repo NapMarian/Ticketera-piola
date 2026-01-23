@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col h-full bg-white dark:bg-gray-800 rounded-lg shadow">
+  <div class="flex flex-col h-full bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border">
     <!-- Chat header -->
-    <div class="flex items-center justify-between px-4 py-3 border-b dark:border-gray-700">
-      <h3 class="font-semibold text-gray-800 dark:text-white">Conversacion</h3>
-      <span v-if="typingUser" class="text-sm text-gray-500 dark:text-gray-400 italic">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-border">
+      <h3 class="font-semibold text-white">Conversacion</h3>
+      <span v-if="typingUser" class="text-sm text-gray-500 italic">
         {{ typingUser }} esta escribiendo...
       </span>
     </div>
@@ -22,12 +22,12 @@
             isOwnMessage(message)
               ? 'bg-primary-500 text-white'
               : message.isInternal
-                ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200 border border-yellow-300 dark:border-yellow-700'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                ? 'bg-yellow-500/20 text-yellow-200 border border-yellow-500/30'
+                : 'bg-surface text-gray-200'
           ]"
         >
           <!-- Sender name -->
-          <p class="text-xs font-medium mb-1" :class="isOwnMessage(message) ? 'text-primary-100' : 'text-gray-500 dark:text-gray-400'">
+          <p class="text-xs font-medium mb-1" :class="isOwnMessage(message) ? 'text-primary-100' : 'text-gray-500'">
             {{ message.senderName || message.user?.name || 'Sistema' }}
             <span v-if="message.isInternal" class="ml-1">(Nota interna)</span>
           </p>
@@ -36,26 +36,26 @@
           <p class="whitespace-pre-wrap break-words">{{ message.content }}</p>
 
           <!-- Time -->
-          <p class="text-xs mt-1" :class="isOwnMessage(message) ? 'text-primary-200' : 'text-gray-400 dark:text-gray-500'">
+          <p class="text-xs mt-1" :class="isOwnMessage(message) ? 'text-primary-200' : 'text-gray-500'">
             {{ formatTime(message.createdAt) }}
           </p>
         </div>
       </div>
 
-      <div v-if="messages.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
+      <div v-if="messages.length === 0" class="text-center text-gray-500 py-8">
         No hay mensajes aun
       </div>
     </div>
 
     <!-- Input -->
-    <div class="border-t dark:border-gray-700 p-4">
+    <div class="border-t border-border p-4">
       <!-- Internal note toggle (staff only) -->
       <div v-if="isStaff" class="flex items-center gap-2 mb-2">
-        <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+        <label class="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
           <input
             type="checkbox"
             v-model="isInternal"
-            class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
+            class="rounded border-border text-primary-500 focus:ring-primary-500/50"
           />
           <span>Nota interna (no visible para el cliente)</span>
         </label>
@@ -68,12 +68,12 @@
           @input="handleTyping"
           placeholder="Escribe tu mensaje..."
           rows="2"
-          class="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          class="flex-1 resize-none rounded-lg bg-surface border border-border text-white px-3 py-2 focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
         />
         <button
           @click="sendMessage"
           :disabled="!newMessage.trim() || sending"
-          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <svg v-if="sending" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>

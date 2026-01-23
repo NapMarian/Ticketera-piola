@@ -2,26 +2,26 @@
   <StaffLayout page-title="Nuevo Ticket">
     <!-- Success state -->
     <div v-if="success" class="max-w-2xl mx-auto">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
-        <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border p-8 text-center">
+        <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
           </svg>
         </div>
-        <h2 class="text-2xl font-semibold text-gray-800 dark:text-white mb-2">Ticket creado</h2>
-        <p class="text-gray-600 dark:text-gray-400 mb-4">
-          Numero de ticket: <strong class="text-primary-600">{{ createdTicket?.ticketNumber }}</strong>
+        <h2 class="text-2xl font-semibold text-white mb-2">Ticket creado</h2>
+        <p class="text-gray-400 mb-4">
+          Numero de ticket: <strong class="text-primary-500">{{ createdTicket?.ticketNumber }}</strong>
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <router-link
             :to="`/tickets/${createdTicket?.id}`"
-            class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            class="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
           >
             Ver ticket
           </router-link>
           <router-link
             to="/tickets"
-            class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            class="px-6 py-3 border border-border text-gray-400 rounded-lg hover:bg-surface-hover transition-colors"
           >
             Volver a tickets
           </router-link>
@@ -31,11 +31,11 @@
 
     <!-- Form -->
     <div v-else class="max-w-3xl mx-auto">
-      <form @submit.prevent="submitTicket" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 lg:p-8">
+      <form @submit.prevent="submitTicket" class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border p-6 lg:p-8">
         <!-- Contact info -->
         <div class="mb-8">
-          <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
             </svg>
             Informacion del cliente
@@ -43,22 +43,22 @@
 
           <div class="grid md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre completo *</label>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Nombre completo *</label>
               <input
                 v-model="form.clientName"
                 type="text"
                 required
-                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
                 placeholder="Nombre del cliente"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Email *</label>
               <input
                 v-model="form.clientEmail"
                 type="email"
                 required
-                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
                 placeholder="email@ejemplo.com"
               />
             </div>
@@ -66,19 +66,19 @@
 
           <div class="grid md:grid-cols-2 gap-4 mt-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Empresa (texto)</label>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Empresa (texto)</label>
               <input
                 v-model="form.clientCompany"
                 type="text"
-                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
                 placeholder="Nombre de la empresa"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cliente registrado</label>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Cliente registrado</label>
               <select
                 v-model="form.clientId"
-                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
               >
                 <option :value="null">Sin asignar</option>
                 <option v-for="client in clients" :key="client.id" :value="client.id">
@@ -91,8 +91,8 @@
 
         <!-- Ticket info -->
         <div class="mb-8">
-          <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
             </svg>
             Detalle del ticket
@@ -100,11 +100,11 @@
 
           <div class="grid md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria *</label>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Categoria *</label>
               <select
                 v-model="form.categoryId"
                 required
-                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
               >
                 <option value="">Selecciona una categoria</option>
                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">
@@ -113,10 +113,10 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prioridad</label>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Prioridad</label>
               <select
                 v-model="form.priority"
-                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
               >
                 <option value="low">Baja</option>
                 <option value="medium">Media</option>
@@ -127,23 +127,23 @@
           </div>
 
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Asunto *</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Asunto *</label>
             <input
               v-model="form.title"
               type="text"
               required
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
               placeholder="Resumen breve del problema"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripcion *</label>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Descripcion *</label>
             <textarea
               v-model="form.description"
               required
               rows="5"
-              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
               placeholder="Describe el problema o consulta con el mayor detalle posible..."
             />
           </div>
@@ -151,8 +151,8 @@
 
         <!-- Assignment -->
         <div class="mb-8">
-          <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
             </svg>
             Asignacion
@@ -160,10 +160,10 @@
 
           <div class="grid md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Asignar a agente</label>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Asignar a agente</label>
               <select
                 v-model="form.assignedAgentId"
-                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
               >
                 <option :value="null">Sin asignar</option>
                 <option v-for="agent in agents" :key="agent.id" :value="agent.id">
@@ -176,29 +176,29 @@
                 <input
                   v-model="form.assignToMe"
                   type="checkbox"
-                  class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                  class="w-4 h-4 text-primary-500 border-border rounded focus:ring-primary-500/50"
                   @change="handleAssignToMe"
                 />
-                <span class="text-sm text-gray-700 dark:text-gray-300">Asignarme a mi</span>
+                <span class="text-sm text-gray-400">Asignarme a mi</span>
               </label>
             </div>
           </div>
         </div>
 
         <!-- Error message -->
-        <div v-if="error" class="mb-4 p-4 bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400">
+        <div v-if="error" class="mb-4 p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400">
           {{ error }}
         </div>
 
         <!-- Submit -->
-        <div class="flex items-center justify-between pt-4 border-t dark:border-gray-700">
-          <router-link to="/tickets" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white">
+        <div class="flex items-center justify-between pt-4 border-t border-border">
+          <router-link to="/tickets" class="text-gray-400 hover:text-white">
             &larr; Cancelar
           </router-link>
           <button
             type="submit"
             :disabled="loading"
-            class="px-8 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors"
+            class="px-8 py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 transition-colors"
           >
             <span v-if="loading" class="flex items-center gap-2">
               <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
