@@ -12,15 +12,15 @@ const SLAConfig = sequelize.define('SLAConfig', {
     allowNull: false,
     unique: true
   },
-  firstResponseHours: {
+  firstResponseMinutes: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    field: 'first_response_hours'
+    field: 'first_response_minutes'
   },
-  resolutionHours: {
+  resolutionMinutes: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    field: 'resolution_hours'
+    field: 'resolution_minutes'
   },
   isActive: {
     type: DataTypes.BOOLEAN,

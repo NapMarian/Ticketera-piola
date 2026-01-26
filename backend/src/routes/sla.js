@@ -19,8 +19,8 @@ router.put('/configs/:id',
   authenticate,
   authorize('admin'),
   [
-    body('firstResponseHours').optional().isInt({ min: 1 }).withMessage('Horas de primera respuesta inválidas'),
-    body('resolutionHours').optional().isInt({ min: 1 }).withMessage('Horas de resolución inválidas')
+    body('firstResponseMinutes').optional().isInt({ min: 1 }).withMessage('Minutos de primera respuesta inválidos'),
+    body('resolutionMinutes').optional().isInt({ min: 1 }).withMessage('Minutos de resolución inválidos')
   ],
   validate,
   slaController.updateSLAConfig

@@ -69,10 +69,10 @@ class SLAService {
     }
 
     const workSchedule = await this.getWorkSchedule();
-    let remainingHours = slaConfig.resolutionHours;
+    let remainingMinutes = slaConfig.resolutionMinutes;
     let currentDate = new Date(createdAt);
 
-    while (remainingHours > 0) {
+    while (remainingMinutes > 0) {
       const dayOfWeek = currentDate.getDay();
       const daySchedule = workSchedule.find(s => s.dayOfWeek === dayOfWeek);
 
@@ -83,15 +83,14 @@ class SLAService {
 
         let workStart = Math.max(currentTime, startTime);
         let availableMinutes = Math.max(0, endTime - workStart);
-        let availableHours = availableMinutes / 60;
 
-        if (availableHours >= remainingHours) {
+        if (availableMinutes >= remainingMinutes) {
           currentDate.setHours(0, 0, 0, 0);
-          currentDate.setMinutes(workStart + remainingHours * 60);
+          currentDate.setMinutes(workStart + remainingMinutes);
           return currentDate;
         }
 
-        remainingHours -= availableHours;
+        remainingMinutes -= availableMinutes;
       }
 
       currentDate.setDate(currentDate.getDate() + 1);
@@ -114,7 +113,7 @@ class SLAService {
 
     const now = new Date();
     const dueDate = new Date(ticket.slaDueDate);
-    const hoursRemaining = (dueDate - now) / (1000 * 60 * 60);
+    const minutesRemaining = (dueDate - now) / (1000 * 60);
 
     if (ticket.status === 'resolved' || ticket.status === 'closed') {
       const resolvedAt = new Date(ticket.resolvedAt || ticket.closedAt);
@@ -129,7 +128,8 @@ class SLAService {
       return { status: 'breached', label: 'SLA Vencido', color: '#ef4444' };
     }
 
-    if (hoursRemaining <= 2) {
+    // Warn when 30 minutes or less remaining
+    if (minutesRemaining <= 30) {
       return { status: 'warning', label: 'Por Vencer', color: '#f59e0b' };
     }
 

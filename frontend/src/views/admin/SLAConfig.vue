@@ -29,26 +29,26 @@
                 <label class="block text-xs text-gray-500 mb-1.5">Primera respuesta</label>
                 <div class="flex items-center gap-2">
                   <input
-                    v-model.number="config.firstResponseHours"
+                    v-model.number="config.firstResponseMinutes"
                     type="number"
                     min="1"
                     class="w-20 px-3 py-1.5 bg-surface border border-border rounded-lg text-white text-center focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
                     @change="updateConfig(config)"
                   />
-                  <span class="text-sm text-gray-500">horas</span>
+                  <span class="text-sm text-gray-500">min</span>
                 </div>
               </div>
               <div>
                 <label class="block text-xs text-gray-500 mb-1.5">Resolucion</label>
                 <div class="flex items-center gap-2">
                   <input
-                    v-model.number="config.resolutionHours"
+                    v-model.number="config.resolutionMinutes"
                     type="number"
                     min="1"
                     class="w-20 px-3 py-1.5 bg-surface border border-border rounded-lg text-white text-center focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
                     @change="updateConfig(config)"
                   />
-                  <span class="text-sm text-gray-500">horas</span>
+                  <span class="text-sm text-gray-500">min</span>
                 </div>
               </div>
             </div>
@@ -69,7 +69,7 @@
       <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border">
         <div class="px-5 py-4 border-b border-border">
           <h2 class="font-medium text-white">Horario Laboral</h2>
-          <p class="text-sm text-gray-500 mt-0.5">Los SLAs solo cuentan horas laborales</p>
+          <p class="text-sm text-gray-500 mt-0.5">Los SLAs solo cuentan tiempo en horario laboral</p>
         </div>
         <div class="divide-y divide-border">
           <div
@@ -140,8 +140,8 @@ async function loadData() {
 async function updateConfig(config) {
   try {
     await api.put(`/sla/configs/${config.id}`, {
-      firstResponseHours: config.firstResponseHours,
-      resolutionHours: config.resolutionHours,
+      firstResponseMinutes: config.firstResponseMinutes,
+      resolutionMinutes: config.resolutionMinutes,
       isActive: config.isActive
     })
   } catch (err) {

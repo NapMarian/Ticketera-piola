@@ -74,10 +74,10 @@ const syncDatabase = async (force = false) => {
     const slaCount = await SLAConfig.count();
     if (slaCount === 0) {
       await SLAConfig.bulkCreate([
-        { priority: 'urgent', firstResponseHours: 1, resolutionHours: 4 },
-        { priority: 'high', firstResponseHours: 4, resolutionHours: 24 },
-        { priority: 'medium', firstResponseHours: 8, resolutionHours: 48 },
-        { priority: 'low', firstResponseHours: 24, resolutionHours: 72 }
+        { priority: 'urgent', firstResponseMinutes: 30, resolutionMinutes: 240 },   // 30min / 4h
+        { priority: 'high', firstResponseMinutes: 30, resolutionMinutes: 480 },     // 30min / 8h
+        { priority: 'medium', firstResponseMinutes: 30, resolutionMinutes: 1440 },  // 30min / 24h
+        { priority: 'low', firstResponseMinutes: 30, resolutionMinutes: 2880 }      // 30min / 48h
       ]);
       console.log('Default SLA configs created');
     }

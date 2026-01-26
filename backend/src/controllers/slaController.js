@@ -4,7 +4,7 @@ const { SLAConfig, Holiday, WorkSchedule } = require('../models');
 const getSLAConfigs = async (req, res) => {
   try {
     const configs = await SLAConfig.findAll({
-      order: [['firstResponseHours', 'ASC']]
+      order: [['firstResponseMinutes', 'ASC']]
     });
 
     res.json({ configs });
@@ -18,7 +18,7 @@ const getSLAConfigs = async (req, res) => {
 const updateSLAConfig = async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstResponseHours, resolutionHours, isActive } = req.body;
+    const { firstResponseMinutes, resolutionMinutes, isActive } = req.body;
 
     const config = await SLAConfig.findByPk(id);
 
@@ -27,8 +27,8 @@ const updateSLAConfig = async (req, res) => {
     }
 
     await config.update({
-      firstResponseHours: firstResponseHours !== undefined ? firstResponseHours : config.firstResponseHours,
-      resolutionHours: resolutionHours !== undefined ? resolutionHours : config.resolutionHours,
+      firstResponseMinutes: firstResponseMinutes !== undefined ? firstResponseMinutes : config.firstResponseMinutes,
+      resolutionMinutes: resolutionMinutes !== undefined ? resolutionMinutes : config.resolutionMinutes,
       isActive: isActive !== undefined ? isActive : config.isActive
     });
 
