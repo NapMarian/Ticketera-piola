@@ -58,8 +58,16 @@ CannedResponse.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 // Sync database
 const syncDatabase = async (force = false) => {
   try {
-    // Use alter: true to update schema without losing data (works for both SQLite and PostgreSQL)
-    await sequelize.sync({ force, alter: !force });
+    // In production, don't use alter to avoid issues with PostgreSQL constraints
+    // In development, use alter to automatically update schema
+    const isProduction = process.env.NODE_ENV === 'production';
+    const syncOptions = force
+      ? { force: true }
+      : isProduction
+        ? {} // Just create tables if they don't exist
+        : { alter: true }; // Update schema in development
+
+    await sequelize.sync(syncOptions);
     console.log('Database synchronized successfully');
 
     // Create default SLA configs if they don't exist
