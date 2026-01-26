@@ -503,28 +503,47 @@ const getTicketStats = async (req, res) => {
       ? Math.round((slaMet / resolvedWithSLA.length) * 100)
       : 100;
 
-    // Average response time (first message from agent) - SQLite compatible
-    const avgResponseTime = await sequelize.query(`
-      SELECT AVG((julianday(m.created_at) - julianday(t.created_at)) * 24 * 60) as avg_minutes
-      FROM tickets t
-      INNER JOIN messages m ON t.id = m.ticket_id
-      WHERE m.sender_type = 'agent'
-      AND m.id = (
-        SELECT MIN(m2.id) FROM messages m2
-        WHERE m2.ticket_id = t.id AND m2.sender_type = 'agent'
-      )
-      ${startDate ? `AND t.created_at >= '${startDate}'` : ''}
-      ${endDate ? `AND t.created_at <= '${endDate}'` : ''}
-    `, { type: sequelize.QueryTypes.SELECT });
+    // Average response time (first message from agent) - Database agnostic
+    const isPostgres = sequelize.getDialect() === 'postgres';
 
-    // Tickets created over time (last 30 days) - SQLite compatible
-    const ticketsTrend = await sequelize.query(`
-      SELECT DATE(created_at) as date, COUNT(*) as count
-      FROM tickets
-      WHERE created_at >= datetime('now', '-30 days')
-      GROUP BY DATE(created_at)
-      ORDER BY date ASC
-    `, { type: sequelize.QueryTypes.SELECT });
+    const avgResponseQuery = isPostgres
+      ? `SELECT AVG(EXTRACT(EPOCH FROM (m.created_at - t.created_at)) / 60) as avg_minutes
+         FROM tickets t
+         INNER JOIN messages m ON t.id = m.ticket_id
+         WHERE m.sender_type = 'agent'
+         AND m.id = (
+           SELECT MIN(m2.id) FROM messages m2
+           WHERE m2.ticket_id = t.id AND m2.sender_type = 'agent'
+         )
+         ${startDate ? `AND t.created_at >= '${startDate}'` : ''}
+         ${endDate ? `AND t.created_at <= '${endDate}'` : ''}`
+      : `SELECT AVG((julianday(m.created_at) - julianday(t.created_at)) * 24 * 60) as avg_minutes
+         FROM tickets t
+         INNER JOIN messages m ON t.id = m.ticket_id
+         WHERE m.sender_type = 'agent'
+         AND m.id = (
+           SELECT MIN(m2.id) FROM messages m2
+           WHERE m2.ticket_id = t.id AND m2.sender_type = 'agent'
+         )
+         ${startDate ? `AND t.created_at >= '${startDate}'` : ''}
+         ${endDate ? `AND t.created_at <= '${endDate}'` : ''}`;
+
+    const avgResponseTime = await sequelize.query(avgResponseQuery, { type: sequelize.QueryTypes.SELECT });
+
+    // Tickets created over time (last 30 days) - Database agnostic
+    const trendQuery = isPostgres
+      ? `SELECT DATE(created_at) as date, COUNT(*) as count
+         FROM tickets
+         WHERE created_at >= NOW() - INTERVAL '30 days'
+         GROUP BY DATE(created_at)
+         ORDER BY date ASC`
+      : `SELECT DATE(created_at) as date, COUNT(*) as count
+         FROM tickets
+         WHERE created_at >= datetime('now', '-30 days')
+         GROUP BY DATE(created_at)
+         ORDER BY date ASC`;
+
+    const ticketsTrend = await sequelize.query(trendQuery, { type: sequelize.QueryTypes.SELECT });
 
     // Average satisfaction
     const avgSatisfaction = await Ticket.findOne({
@@ -569,30 +588,48 @@ const getTicketStats = async (req, res) => {
 const getAgentRanking = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
+    const isPostgres = sequelize.getDialect() === 'postgres';
 
     let dateCondition = '';
     if (startDate) dateCondition += ` AND t.resolved_at >= '${startDate}'`;
     if (endDate) dateCondition += ` AND t.resolved_at <= '${endDate}'`;
 
-    // SQLite compatible query
-    const ranking = await sequelize.query(`
-      SELECT
-        u.id,
-        u.name,
-        u.avatar,
-        COUNT(t.id) as resolved_count,
-        AVG((julianday(t.resolved_at) - julianday(t.created_at)) * 24) as avg_resolution_hours,
-        AVG(t.satisfaction_rating) as avg_satisfaction,
-        SUM(CASE WHEN t.resolved_at <= t.sla_due_date THEN 1 ELSE 0 END) as sla_met,
-        COUNT(t.id) as total_with_sla
-      FROM users u
-      LEFT JOIN tickets t ON u.id = t.assigned_agent_id
-        AND t.status IN ('resolved', 'closed')
-        ${dateCondition}
-      WHERE u.role IN ('agent', 'admin') AND u.is_active = 1
-      GROUP BY u.id
-      ORDER BY resolved_count DESC
-    `, { type: sequelize.QueryTypes.SELECT });
+    // Database agnostic query
+    const rankingQuery = isPostgres
+      ? `SELECT
+          u.id,
+          u.name,
+          u.avatar,
+          COUNT(t.id) as resolved_count,
+          AVG(EXTRACT(EPOCH FROM (t.resolved_at - t.created_at)) / 3600) as avg_resolution_hours,
+          AVG(t.satisfaction_rating) as avg_satisfaction,
+          SUM(CASE WHEN t.resolved_at <= t.sla_due_date THEN 1 ELSE 0 END) as sla_met,
+          COUNT(t.id) as total_with_sla
+        FROM users u
+        LEFT JOIN tickets t ON u.id = t.assigned_agent_id
+          AND t.status IN ('resolved', 'closed')
+          ${dateCondition}
+        WHERE u.role IN ('agent', 'admin') AND u.is_active = true
+        GROUP BY u.id, u.name, u.avatar
+        ORDER BY resolved_count DESC`
+      : `SELECT
+          u.id,
+          u.name,
+          u.avatar,
+          COUNT(t.id) as resolved_count,
+          AVG((julianday(t.resolved_at) - julianday(t.created_at)) * 24) as avg_resolution_hours,
+          AVG(t.satisfaction_rating) as avg_satisfaction,
+          SUM(CASE WHEN t.resolved_at <= t.sla_due_date THEN 1 ELSE 0 END) as sla_met,
+          COUNT(t.id) as total_with_sla
+        FROM users u
+        LEFT JOIN tickets t ON u.id = t.assigned_agent_id
+          AND t.status IN ('resolved', 'closed')
+          ${dateCondition}
+        WHERE u.role IN ('agent', 'admin') AND u.is_active = 1
+        GROUP BY u.id
+        ORDER BY resolved_count DESC`;
+
+    const ranking = await sequelize.query(rankingQuery, { type: sequelize.QueryTypes.SELECT });
 
     const formattedRanking = ranking.map((agent, index) => ({
       rank: index + 1,
