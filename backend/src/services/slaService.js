@@ -1,4 +1,4 @@
-const { SLAConfig, Holiday, WorkSchedule } = require('../models');
+const { SLAConfig, Holiday, WorkSchedule, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 class SLAService {
@@ -23,20 +23,27 @@ class SLAService {
 
   async isHoliday(date) {
     const dateOnly = new Date(date).toISOString().split('T')[0];
-    const holiday = await Holiday.findOne({
-      where: {
-        [Op.or]: [
-          { date: dateOnly },
-          {
-            isRecurring: true,
-            date: {
-              [Op.like]: `%-${dateOnly.substring(5)}`
-            }
-          }
-        ]
-      }
+    const monthDay = dateOnly.substring(5); // "MM-DD"
+
+    // First check for exact date match
+    const exactMatch = await Holiday.findOne({
+      where: { date: dateOnly }
     });
-    return !!holiday;
+    if (exactMatch) return true;
+
+    // Then check for recurring holidays (match month-day)
+    const recurringHolidays = await Holiday.findAll({
+      where: { isRecurring: true }
+    });
+
+    for (const holiday of recurringHolidays) {
+      const holidayDate = new Date(holiday.date).toISOString().split('T')[0];
+      if (holidayDate.substring(5) === monthDay) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   async isWorkingTime(date) {
