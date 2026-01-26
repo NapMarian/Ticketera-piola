@@ -70,33 +70,21 @@ const syncDatabase = async (force = false) => {
     await sequelize.sync(syncOptions);
     console.log('Database synchronized successfully');
 
-    // Migration: Rename SLA columns from hours to minutes if needed
+    // Migration: Drop and recreate SLA table if it has old columns
     try {
       const [results] = await sequelize.query(`
         SELECT column_name FROM information_schema.columns
         WHERE table_name = 'sla_configs' AND column_name = 'first_response_hours'
       `);
 
-      if (results.length > 0) {
-        console.log('Migrating SLA table from hours to minutes...');
-        await sequelize.query(`
-          ALTER TABLE sla_configs
-          RENAME COLUMN first_response_hours TO first_response_minutes
-        `);
-        await sequelize.query(`
-          ALTER TABLE sla_configs
-          RENAME COLUMN resolution_hours TO resolution_minutes
-        `);
-        // Convert hours to minutes for existing data
-        await sequelize.query(`
-          UPDATE sla_configs
-          SET first_response_minutes = first_response_minutes * 60,
-              resolution_minutes = resolution_minutes * 60
-        `);
-        console.log('SLA migration completed');
+      if (results && results.length > 0) {
+        console.log('Old SLA table detected, dropping and recreating...');
+        await sequelize.query('DROP TABLE IF EXISTS sla_configs CASCADE');
+        await SLAConfig.sync({ force: true });
+        console.log('SLA table recreated with new columns');
       }
     } catch (migrationError) {
-      console.log('SLA migration not needed or already done');
+      console.log('SLA migration check:', migrationError.message);
     }
 
     // Create default SLA configs if they don't exist
