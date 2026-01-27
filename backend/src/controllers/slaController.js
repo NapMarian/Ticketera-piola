@@ -109,8 +109,18 @@ const updateHoliday = async (req, res) => {
 
     const updates = {};
     if (date) {
-      updates.date = date;
-      updates.year = new Date(date).getFullYear();
+      // Ensure date is in YYYY-MM-DD format for DATEONLY
+      const dateStr = typeof date === 'string' ? date.split('T')[0] : date;
+      updates.date = dateStr;
+      updates.year = parseInt(dateStr.split('-')[0], 10);
+
+      // Check if another holiday exists with this date
+      const existing = await Holiday.findOne({
+        where: { date: dateStr }
+      });
+      if (existing && existing.id !== parseInt(id)) {
+        return res.status(400).json({ error: 'Ya existe un feriado en esa fecha' });
+      }
     }
     if (name) updates.name = name;
     if (isRecurring !== undefined) updates.isRecurring = isRecurring;

@@ -40,7 +40,7 @@ router.post('/holidays',
   authenticate,
   authorize('admin'),
   [
-    body('date').isDate().withMessage('Fecha inválida'),
+    body('date').notEmpty().withMessage('Fecha requerida'),
     body('name').trim().notEmpty().withMessage('El nombre es requerido')
   ],
   validate,
@@ -52,7 +52,7 @@ router.put('/holidays/:id',
   authenticate,
   authorize('admin'),
   [
-    body('date').optional().isDate().withMessage('Fecha inválida'),
+    body('date').optional(),
     body('name').optional().trim().notEmpty().withMessage('El nombre no puede estar vacío')
   ],
   validate,
