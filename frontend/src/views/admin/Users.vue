@@ -304,6 +304,12 @@ async function handleAvatarUpload(event) {
 
     editingAvatar.value = data.avatar
     loadUsers()
+
+    // Update auth store if editing current user (for header avatar)
+    if (editingId.value === authStore.user?.id) {
+      authStore.user.avatar = data.avatar
+      localStorage.setItem('user', JSON.stringify(authStore.user))
+    }
   } catch (err) {
     error.value = err.response?.data?.error || 'Error al subir avatar'
   }
@@ -321,6 +327,12 @@ async function handleDeleteAvatar() {
     await api.delete(`/users/${editingId.value}/avatar`)
     editingAvatar.value = null
     loadUsers()
+
+    // Update auth store if editing current user (for header avatar)
+    if (editingId.value === authStore.user?.id) {
+      authStore.user.avatar = null
+      localStorage.setItem('user', JSON.stringify(authStore.user))
+    }
   } catch (err) {
     error.value = err.response?.data?.error || 'Error al eliminar avatar'
   }

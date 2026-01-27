@@ -22,8 +22,9 @@
       <div class="flex justify-center items-end gap-4 py-8" v-if="ranking.length > 0">
         <!-- Second place -->
         <div v-if="ranking[1]" class="text-center transform hover:scale-105 transition-transform">
-          <div class="w-24 h-24 mx-auto mb-3 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-3xl font-bold shadow-lg shadow-gray-500/20">
-            {{ getInitials(ranking[1]?.name) }}
+          <div class="w-24 h-24 mx-auto mb-3 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-3xl font-bold shadow-lg shadow-gray-500/20 overflow-hidden">
+            <img v-if="ranking[1]?.avatar" :src="getAvatarUrl(ranking[1].avatar)" alt="" class="w-full h-full object-cover" />
+            <span v-else>{{ getInitials(ranking[1]?.name) }}</span>
           </div>
           <div class="bg-background-tertiary rounded-xl p-4 border border-border min-w-[140px]">
             <p class="text-2xl mb-2">2</p>
@@ -37,8 +38,9 @@
 
         <!-- First place -->
         <div v-if="ranking[0]" class="text-center transform hover:scale-105 transition-transform -mt-4">
-          <div class="w-32 h-32 mx-auto mb-3 rounded-full bg-gradient-to-br from-primary-400 to-accent-500 flex items-center justify-center text-4xl font-bold shadow-lg shadow-primary-500/30 ring-4 ring-primary-400/30">
-            {{ getInitials(ranking[0]?.name) }}
+          <div class="w-32 h-32 mx-auto mb-3 rounded-full bg-gradient-to-br from-primary-400 to-accent-500 flex items-center justify-center text-4xl font-bold shadow-lg shadow-primary-500/30 ring-4 ring-primary-400/30 overflow-hidden">
+            <img v-if="ranking[0]?.avatar" :src="getAvatarUrl(ranking[0].avatar)" alt="" class="w-full h-full object-cover" />
+            <span v-else>{{ getInitials(ranking[0]?.name) }}</span>
           </div>
           <div class="bg-primary-500/10 rounded-xl p-5 border border-primary-500/30 min-w-[160px]">
             <p class="text-4xl mb-2">1</p>
@@ -55,8 +57,9 @@
 
         <!-- Third place -->
         <div v-if="ranking[2]" class="text-center transform hover:scale-105 transition-transform">
-          <div class="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-cteam-orange to-orange-600 flex items-center justify-center text-2xl font-bold shadow-lg shadow-orange-500/20">
-            {{ getInitials(ranking[2]?.name) }}
+          <div class="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-cteam-orange to-orange-600 flex items-center justify-center text-2xl font-bold shadow-lg shadow-orange-500/20 overflow-hidden">
+            <img v-if="ranking[2]?.avatar" :src="getAvatarUrl(ranking[2].avatar)" alt="" class="w-full h-full object-cover" />
+            <span v-else>{{ getInitials(ranking[2]?.name) }}</span>
           </div>
           <div class="bg-background-tertiary rounded-xl p-4 border border-border min-w-[130px]">
             <p class="text-2xl mb-2">3</p>
@@ -79,8 +82,9 @@
           <div class="text-xl font-bold text-gray-500 w-10 text-center">
             {{ agent.rank }}
           </div>
-          <div class="w-12 h-12 rounded-full bg-surface flex items-center justify-center text-sm font-bold text-gray-300">
-            {{ getInitials(agent.name) }}
+          <div class="w-12 h-12 rounded-full bg-surface flex items-center justify-center text-sm font-bold text-gray-300 overflow-hidden">
+            <img v-if="agent.avatar" :src="getAvatarUrl(agent.avatar)" alt="" class="w-full h-full object-cover" />
+            <span v-else>{{ getInitials(agent.name) }}</span>
           </div>
           <div class="flex-1 min-w-0">
             <p class="font-medium text-white truncate">{{ agent.name }}</p>
@@ -136,6 +140,14 @@ let refreshInterval = null
 
 function getInitials(name) {
   return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
+}
+
+function getAvatarUrl(avatarPath) {
+  if (!avatarPath) return null
+  if (avatarPath.startsWith('http')) return avatarPath
+  const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') ||
+    (import.meta.env.PROD ? 'https://ticketera-piola-production.up.railway.app' : '')
+  return `${baseUrl}${avatarPath}`
 }
 
 function formatTime() {
