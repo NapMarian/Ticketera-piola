@@ -163,7 +163,7 @@ const form = reactive({
 })
 
 const sortedHolidays = computed(() => {
-  return [...holidays.value].sort((a, b) => new Date(a.date) - new Date(b.date))
+  return [...holidays.value].sort((a, b) => a.date.localeCompare(b.date))
 })
 
 function resetForm() {
@@ -173,16 +173,22 @@ function resetForm() {
   error.value = ''
 }
 
+// Parse YYYY-MM-DD as local date (avoid timezone issues)
+function parseLocalDate(dateStr) {
+  const [year, month, day] = dateStr.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
 function getDay(date) {
-  return new Date(date).getDate()
+  return parseLocalDate(date).getDate()
 }
 
 function getMonth(date) {
-  return new Date(date).toLocaleDateString('es-ES', { month: 'short' }).toUpperCase()
+  return parseLocalDate(date).toLocaleDateString('es-ES', { month: 'short' }).toUpperCase()
 }
 
 function formatFullDate(date) {
-  return new Date(date).toLocaleDateString('es-ES', {
+  return parseLocalDate(date).toLocaleDateString('es-ES', {
     weekday: 'long',
     day: 'numeric',
     month: 'long'
