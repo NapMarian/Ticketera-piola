@@ -4,6 +4,7 @@ const { body } = require('express-validator');
 const userController = require('../controllers/userController');
 const { authenticate, authorize } = require('../middleware/auth');
 const validate = require('../middleware/validate');
+const { uploadAvatar } = require('../config/upload');
 
 // Get agents (for assignment dropdown)
 router.get('/agents',
@@ -11,6 +12,41 @@ router.get('/agents',
   authorize('admin', 'agent'),
   userController.getAgents
 );
+
+// === Profile routes (current user) ===
+
+// Get current user profile
+router.get('/profile',
+  authenticate,
+  userController.getProfile
+);
+
+// Update current user profile
+router.put('/profile',
+  authenticate,
+  [
+    body('name').optional().trim().notEmpty().withMessage('El nombre no puede estar vacio'),
+    body('email').optional().isEmail().withMessage('Email invalido'),
+    body('newPassword').optional().isLength({ min: 6 }).withMessage('La nueva contrasena debe tener al menos 6 caracteres')
+  ],
+  validate,
+  userController.updateProfile
+);
+
+// Upload avatar
+router.post('/profile/avatar',
+  authenticate,
+  uploadAvatar.single('avatar'),
+  userController.uploadAvatar
+);
+
+// Delete avatar
+router.delete('/profile/avatar',
+  authenticate,
+  userController.deleteAvatar
+);
+
+// === Admin routes ===
 
 // Get all users (admin only)
 router.get('/',

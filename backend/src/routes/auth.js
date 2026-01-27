@@ -4,6 +4,7 @@ const { body } = require('express-validator');
 const authController = require('../controllers/authController');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const validate = require('../middleware/validate');
+const { uploadAvatar } = require('../config/upload');
 
 // Register (public or admin creating user)
 router.post('/register',
@@ -49,6 +50,19 @@ router.put('/password',
   ],
   validate,
   authController.changePassword
+);
+
+// Upload avatar
+router.post('/avatar',
+  authenticate,
+  uploadAvatar.single('avatar'),
+  authController.uploadAvatar
+);
+
+// Delete avatar
+router.delete('/avatar',
+  authenticate,
+  authController.deleteAvatar
 );
 
 module.exports = router;

@@ -105,6 +105,51 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function uploadAvatar(file) {
+    try {
+      const formData = new FormData()
+      formData.append('avatar', file)
+
+      const { data } = await api.post('/auth/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+
+      user.value = data.user
+      localStorage.setItem('user', JSON.stringify(data.user))
+      return { success: true, avatar: data.avatar }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Error al subir avatar'
+      }
+    }
+  }
+
+  async function deleteAvatar() {
+    try {
+      const { data } = await api.delete('/auth/avatar')
+      user.value = data.user
+      localStorage.setItem('user', JSON.stringify(data.user))
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Error al eliminar avatar'
+      }
+    }
+  }
+
+  // Get full avatar URL
+  function getAvatarUrl(avatarPath) {
+    if (!avatarPath) return null
+    // If it's already a full URL, return as is
+    if (avatarPath.startsWith('http')) return avatarPath
+    // Otherwise, prepend the API base URL
+    const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') ||
+      (import.meta.env.PROD ? 'https://ticketera-piola-production.up.railway.app' : '')
+    return `${baseUrl}${avatarPath}`
+  }
+
   return {
     user,
     token,
@@ -117,6 +162,9 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     logout,
     updateProfile,
-    changePassword
+    changePassword,
+    uploadAvatar,
+    deleteAvatar,
+    getAvatarUrl
   }
 })

@@ -1,5 +1,7 @@
 const { User, Ticket } = require('../models');
 const { Op } = require('sequelize');
+const fs = require('fs');
+const path = require('path');
 
 // Get all users (admin only)
 const getUsers = async (req, res) => {
@@ -171,11 +173,144 @@ const getAgents = async (req, res) => {
   }
 };
 
+// Get current user profile
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: { exclude: ['password'] }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.json({ user });
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json({ error: 'Error al obtener perfil' });
+  }
+};
+
+// Update current user profile
+const updateProfile = async (req, res) => {
+  try {
+    const { name, email, currentPassword, newPassword } = req.body;
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const updates = {};
+
+    // Update name
+    if (name) {
+      updates.name = name;
+    }
+
+    // Update email (check if not taken)
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        return res.status(400).json({ error: 'El email ya esta en uso' });
+      }
+      updates.email = email;
+    }
+
+    // Update password (requires current password)
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({ error: 'Debe proporcionar la contrasena actual' });
+      }
+      const isValid = await user.validatePassword(currentPassword);
+      if (!isValid) {
+        return res.status(400).json({ error: 'Contrasena actual incorrecta' });
+      }
+      updates.password = newPassword;
+    }
+
+    await user.update(updates);
+
+    res.json({
+      message: 'Perfil actualizado',
+      user: user.toJSON()
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ error: 'Error al actualizar perfil' });
+  }
+};
+
+// Upload avatar
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se ha subido ninguna imagen' });
+    }
+
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Delete old avatar if exists
+    if (user.avatar) {
+      const oldAvatarPath = path.join(__dirname, '../../uploads/avatars', path.basename(user.avatar));
+      if (fs.existsSync(oldAvatarPath)) {
+        fs.unlinkSync(oldAvatarPath);
+      }
+    }
+
+    // Save new avatar path
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    await user.update({ avatar: avatarUrl });
+
+    res.json({
+      message: 'Avatar actualizado',
+      avatar: avatarUrl,
+      user: user.toJSON()
+    });
+  } catch (error) {
+    console.error('Upload avatar error:', error);
+    res.status(500).json({ error: 'Error al subir avatar' });
+  }
+};
+
+// Delete avatar
+const deleteAvatar = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    if (user.avatar) {
+      const avatarPath = path.join(__dirname, '../../uploads/avatars', path.basename(user.avatar));
+      if (fs.existsSync(avatarPath)) {
+        fs.unlinkSync(avatarPath);
+      }
+      await user.update({ avatar: null });
+    }
+
+    res.json({
+      message: 'Avatar eliminado',
+      user: user.toJSON()
+    });
+  } catch (error) {
+    console.error('Delete avatar error:', error);
+    res.status(500).json({ error: 'Error al eliminar avatar' });
+  }
+};
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   updateUser,
   deleteUser,
-  getAgents
+  getAgents,
+  getProfile,
+  updateProfile,
+  uploadAvatar,
+  deleteAvatar
 };

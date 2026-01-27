@@ -96,8 +96,15 @@
                 @click="showUserMenu = !showUserMenu"
                 class="flex items-center gap-2 p-1.5 text-gray-400 hover:bg-surface-hover rounded-lg transition-colors"
               >
-                <div class="w-7 h-7 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
-                  <span class="text-white text-xs font-semibold">{{ userInitials }}</span>
+                <div class="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden"
+                     :class="{ 'bg-gradient-to-br from-primary-500 to-accent-500': !userAvatarUrl }">
+                  <img
+                    v-if="userAvatarUrl"
+                    :src="userAvatarUrl"
+                    alt="Avatar"
+                    class="w-full h-full object-cover"
+                  />
+                  <span v-else class="text-white text-xs font-semibold">{{ userInitials }}</span>
                 </div>
                 <span class="hidden md:block text-sm text-gray-300">{{ authStore.user?.name }}</span>
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,9 +122,21 @@
                   <p class="text-xs text-gray-500 mt-0.5">{{ authStore.user?.email }}</p>
                 </div>
                 <button
-                  @click="logout"
-                  class="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-surface-hover transition-colors"
+                  @click="showProfileModal = true; showUserMenu = false"
+                  class="w-full text-left px-4 py-2.5 text-sm text-gray-300 hover:bg-surface-hover transition-colors flex items-center gap-2"
                 >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                  Mi perfil
+                </button>
+                <button
+                  @click="logout"
+                  class="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-surface-hover transition-colors flex items-center gap-2"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                  </svg>
                   Cerrar sesion
                 </button>
               </div>
@@ -138,11 +157,109 @@
       class="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
       @click="sidebarOpen = false"
     />
+
+    <!-- Profile Modal -->
+    <div
+      v-if="showProfileModal"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      @mousedown.self="backdropMouseDown = true"
+      @mouseup.self="if (backdropMouseDown) showProfileModal = false; backdropMouseDown = false"
+      @mouseup="backdropMouseDown = false"
+    >
+      <div class="bg-background-tertiary rounded-xl border border-border shadow-xl max-w-md w-full p-6">
+        <h2 class="text-xl font-semibold text-white mb-6">Mi Perfil</h2>
+
+        <!-- Avatar section -->
+        <div class="flex flex-col items-center mb-6">
+          <div class="relative group">
+            <div class="w-24 h-24 rounded-full overflow-hidden"
+                 :class="{ 'bg-gradient-to-br from-primary-500 to-accent-500': !userAvatarUrl }">
+              <img
+                v-if="userAvatarUrl"
+                :src="userAvatarUrl"
+                alt="Avatar"
+                class="w-full h-full object-cover"
+              />
+              <div v-else class="w-full h-full flex items-center justify-center">
+                <span class="text-white text-2xl font-semibold">{{ userInitials }}</span>
+              </div>
+            </div>
+            <label class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleAvatarUpload"
+              />
+            </label>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">Click para cambiar foto</p>
+          <button
+            v-if="authStore.user?.avatar"
+            @click="handleDeleteAvatar"
+            class="mt-2 text-xs text-red-400 hover:text-red-300 transition-colors"
+          >
+            Eliminar foto
+          </button>
+        </div>
+
+        <!-- Profile form -->
+        <form @submit.prevent="handleUpdateProfile">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-400 mb-1">Nombre</label>
+            <input
+              v-model="profileForm.name"
+              type="text"
+              class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+            <input
+              :value="authStore.user?.email"
+              type="email"
+              disabled
+              class="w-full px-4 py-2 bg-surface/50 border border-border rounded-lg text-gray-500 cursor-not-allowed"
+            />
+          </div>
+
+          <div v-if="profileError" class="mb-4 p-3 bg-red-900/50 text-red-400 rounded-lg text-sm">
+            {{ profileError }}
+          </div>
+
+          <div v-if="profileSuccess" class="mb-4 p-3 bg-green-900/50 text-green-400 rounded-lg text-sm">
+            {{ profileSuccess }}
+          </div>
+
+          <div class="flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="showProfileModal = false"
+              class="px-4 py-2 bg-surface border border-border text-gray-400 rounded-lg hover:bg-surface-hover transition-colors"
+            >
+              Cerrar
+            </button>
+            <button
+              type="submit"
+              :disabled="profileSaving"
+              class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 transition-colors"
+            >
+              {{ profileSaving ? 'Guardando...' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, h } from 'vue'
+import { ref, reactive, computed, onMounted, watch, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
@@ -158,6 +275,28 @@ const themeStore = useThemeStore()
 const sidebarOpen = ref(false)
 const showNotifications = ref(false)
 const showUserMenu = ref(false)
+const showProfileModal = ref(false)
+const backdropMouseDown = ref(false)
+const profileSaving = ref(false)
+const profileError = ref('')
+const profileSuccess = ref('')
+
+const profileForm = reactive({
+  name: ''
+})
+
+// Initialize form when modal opens
+watch(showProfileModal, (isOpen) => {
+  if (isOpen) {
+    profileForm.name = authStore.user?.name || ''
+    profileError.value = ''
+    profileSuccess.value = ''
+  }
+})
+
+const userAvatarUrl = computed(() => {
+  return authStore.getAvatarUrl(authStore.user?.avatar)
+})
 
 const props = defineProps({
   pageTitle: {
@@ -230,6 +369,56 @@ function isActive(path) {
 function logout() {
   authStore.logout()
   router.push('/login')
+}
+
+async function handleUpdateProfile() {
+  profileSaving.value = true
+  profileError.value = ''
+  profileSuccess.value = ''
+
+  const result = await authStore.updateProfile({ name: profileForm.name })
+
+  if (result.success) {
+    profileSuccess.value = 'Perfil actualizado'
+  } else {
+    profileError.value = result.error
+  }
+
+  profileSaving.value = false
+}
+
+async function handleAvatarUpload(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+
+  profileError.value = ''
+  profileSuccess.value = ''
+
+  const result = await authStore.uploadAvatar(file)
+
+  if (result.success) {
+    profileSuccess.value = 'Avatar actualizado'
+  } else {
+    profileError.value = result.error
+  }
+
+  // Clear the input
+  event.target.value = ''
+}
+
+async function handleDeleteAvatar() {
+  if (!confirm('Eliminar tu foto de perfil?')) return
+
+  profileError.value = ''
+  profileSuccess.value = ''
+
+  const result = await authStore.deleteAvatar()
+
+  if (result.success) {
+    profileSuccess.value = 'Avatar eliminado'
+  } else {
+    profileError.value = result.error
+  }
 }
 
 onMounted(() => {
