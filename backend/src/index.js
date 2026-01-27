@@ -21,6 +21,14 @@ const notificationRoutes = require('./routes/notifications');
 const cannedResponseRoutes = require('./routes/cannedResponses');
 const clientRoutes = require('./routes/clients');
 
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../uploads/avatars');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const app = express();
 const server = http.createServer(app);
 
@@ -61,8 +69,14 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (uploads)
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Serve static files (uploads) with proper headers
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
+  setHeaders: (res, filePath) => {
+    // Set CORS headers for static files
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+}));
 
 // Request logging in development
 if (process.env.NODE_ENV === 'development') {

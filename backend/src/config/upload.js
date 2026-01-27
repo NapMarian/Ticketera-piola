@@ -13,9 +13,11 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
+    // Use target user ID from params if admin is uploading for another user
+    const userId = req.params.id || req.user.id;
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(file.originalname);
-    cb(null, `avatar-${req.user.id}-${uniqueSuffix}${ext}`);
+    cb(null, `avatar-${userId}-${uniqueSuffix}${ext}`);
   }
 });
 

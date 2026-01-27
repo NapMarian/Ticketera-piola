@@ -42,3 +42,10 @@ coverage/
 tmp/
 temp/
 *.tmp
+
+# Uploads (keep folder structure with .gitkeep)
+backend/uploads/*
+!backend/uploads/.gitkeep
+!backend/uploads/avatars/
+backend/uploads/avatars/*
+!backend/uploads/avatars/.gitkeep
