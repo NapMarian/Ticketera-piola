@@ -78,7 +78,9 @@
     <div
       v-if="showModal"
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-      @click.self="showModal = false"
+      @mousedown.self="backdropMouseDown = true"
+      @mouseup.self="if (backdropMouseDown) showModal = false; backdropMouseDown = false"
+      @mouseup="backdropMouseDown = false"
     >
       <div class="bg-background-tertiary rounded-xl border border-border max-w-lg w-full p-6">
         <h2 class="text-xl font-semibold text-white mb-4">
@@ -171,6 +173,7 @@ const isAdmin = computed(() => authStore.isAdmin)
 const responses = ref([])
 const loading = ref(true)
 const showModal = ref(false)
+const backdropMouseDown = ref(false)
 const editingId = ref(null)
 const saving = ref(false)
 const error = ref('')
