@@ -96,4 +96,19 @@ router.delete('/:id',
   userController.deleteUser
 );
 
+// Upload avatar for user (admin only)
+router.post('/:id/avatar',
+  authenticate,
+  authorize('admin'),
+  uploadAvatar.single('avatar'),
+  userController.uploadUserAvatar
+);
+
+// Delete avatar for user (admin only)
+router.delete('/:id/avatar',
+  authenticate,
+  authorize('admin'),
+  userController.deleteUserAvatar
+);
+
 module.exports = router;

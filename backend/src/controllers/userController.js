@@ -302,6 +302,71 @@ const deleteAvatar = async (req, res) => {
   }
 };
 
+// Upload avatar for specific user (admin only)
+const uploadUserAvatar = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se ha subido ninguna imagen' });
+    }
+
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Delete old avatar if exists
+    if (user.avatar) {
+      const oldAvatarPath = path.join(__dirname, '../../uploads/avatars', path.basename(user.avatar));
+      if (fs.existsSync(oldAvatarPath)) {
+        fs.unlinkSync(oldAvatarPath);
+      }
+    }
+
+    // Save new avatar path
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    await user.update({ avatar: avatarUrl });
+
+    res.json({
+      message: 'Avatar actualizado',
+      avatar: avatarUrl,
+      user: user.toJSON()
+    });
+  } catch (error) {
+    console.error('Upload user avatar error:', error);
+    res.status(500).json({ error: 'Error al subir avatar' });
+  }
+};
+
+// Delete avatar for specific user (admin only)
+const deleteUserAvatar = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    if (user.avatar) {
+      const avatarPath = path.join(__dirname, '../../uploads/avatars', path.basename(user.avatar));
+      if (fs.existsSync(avatarPath)) {
+        fs.unlinkSync(avatarPath);
+      }
+      await user.update({ avatar: null });
+    }
+
+    res.json({
+      message: 'Avatar eliminado',
+      user: user.toJSON()
+    });
+  } catch (error) {
+    console.error('Delete user avatar error:', error);
+    res.status(500).json({ error: 'Error al eliminar avatar' });
+  }
+};
+
 module.exports = {
   getUsers,
   getUser,
@@ -312,5 +377,7 @@ module.exports = {
   getProfile,
   updateProfile,
   uploadAvatar,
-  deleteAvatar
+  deleteAvatar,
+  uploadUserAvatar,
+  deleteUserAvatar
 };
