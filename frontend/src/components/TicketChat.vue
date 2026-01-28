@@ -31,7 +31,7 @@
             <template v-if="isOwnMessage(message)">
               Tú
             </template>
-            <template v-else>
+            <template v-else-if="message.senderType === 'agent'">
               <!-- Agent/Staff message -->
               <span class="flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
@@ -40,6 +40,18 @@
                 {{ message.user?.name || message.senderName || 'Soporte' }}
                 <span class="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 rounded-full font-medium">
                   Soporte
+                </span>
+              </span>
+            </template>
+            <template v-else>
+              <!-- Client message -->
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+                {{ message.senderName || 'Cliente' }}
+                <span class="px-1.5 py-0.5 text-[10px] bg-blue-500/20 text-blue-400 rounded-full font-medium">
+                  Cliente
                 </span>
               </span>
             </template>
