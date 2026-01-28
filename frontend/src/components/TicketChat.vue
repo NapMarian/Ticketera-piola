@@ -159,7 +159,9 @@ async function fetchMessages() {
     } else if (props.ticketNumber) {
       params.ticketNumber = props.ticketNumber
     }
+    console.log('[TicketChat] Fetching messages for ticket:', props.ticketId, 'with params:', params)
     const { data } = await api.get(`/messages/${props.ticketId}`, { params })
+    console.log('[TicketChat] Received messages:', data.messages.length)
     messages.value = data.messages
     scrollToBottom()
   } catch (error) {
@@ -275,6 +277,7 @@ function handleUserTyping(data) {
 }
 
 onMounted(() => {
+  console.log('[TicketChat] Component mounted, ticketId:', props.ticketId, 'ticketNumber:', props.ticketNumber)
   fetchMessages()
 
   // Connect socket and join room
@@ -286,7 +289,9 @@ onMounted(() => {
   socketService.onUserTyping(handleUserTyping)
 
   // Poll for new messages every 5 seconds as fallback
+  console.log('[TicketChat] Setting up polling interval (5 seconds)')
   pollInterval.value = setInterval(() => {
+    console.log('[TicketChat] Polling tick - fetching messages...')
     fetchMessages()
   }, 5000)
 })
