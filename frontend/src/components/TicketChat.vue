@@ -149,6 +149,7 @@ const typingUser = ref(null)
 const typingTimeout = ref(null)
 
 const isStaff = ref(!!authStore.user && ['admin', 'agent'].includes(authStore.user.role))
+const pollInterval = ref(null)
 
 async function fetchMessages() {
   try {
@@ -283,6 +284,11 @@ onMounted(() => {
   // Listen for events
   socketService.onNewMessage(handleNewMessage)
   socketService.onUserTyping(handleUserTyping)
+
+  // Poll for new messages every 5 seconds as fallback
+  pollInterval.value = setInterval(() => {
+    fetchMessages()
+  }, 5000)
 })
 
 onUnmounted(() => {
@@ -292,6 +298,10 @@ onUnmounted(() => {
 
   if (typingTimeout.value) {
     clearTimeout(typingTimeout.value)
+  }
+
+  if (pollInterval.value) {
+    clearInterval(pollInterval.value)
   }
 })
 
