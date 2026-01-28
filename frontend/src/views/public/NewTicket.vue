@@ -30,7 +30,7 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <router-link
-            :to="`/ticket/${createdAccessToken}`"
+            :to="`/ticket/${createdTicket?.ticketNumber}`"
             class="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
           >
             Ver mi ticket

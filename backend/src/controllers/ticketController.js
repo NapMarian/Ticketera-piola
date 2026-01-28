@@ -92,7 +92,7 @@ const createTicket = async (req, res) => {
   }
 };
 
-// Get ticket by access token (public)
+// Get ticket by access token (public) - kept for backward compatibility
 const getTicketByToken = async (req, res) => {
   try {
     const { token } = req.params;
@@ -128,6 +128,46 @@ const getTicketByToken = async (req, res) => {
     res.json({ ticket, slaStatus });
   } catch (error) {
     console.error('Get ticket by token error:', error);
+    res.status(500).json({ error: 'Error al obtener ticket' });
+  }
+};
+
+// Get ticket by ticket number (public)
+const getTicketByTicketNumber = async (req, res) => {
+  try {
+    const { ticketNumber } = req.params;
+
+    const ticket = await Ticket.findOne({
+      where: { ticketNumber: ticketNumber },
+      include: [
+        { model: Category, as: 'category' },
+        { model: User, as: 'agent', attributes: ['id', 'name', 'avatar'] },
+        {
+          model: Message,
+          as: 'messages',
+          where: { isInternal: false },
+          required: false,
+          include: [{ model: User, as: 'user', attributes: ['id', 'name', 'avatar'] }],
+          order: [['createdAt', 'ASC']]
+        },
+        {
+          model: TicketHistory,
+          as: 'history',
+          include: [{ model: User, as: 'user', attributes: ['id', 'name'] }],
+          order: [['createdAt', 'DESC']]
+        }
+      ]
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket no encontrado' });
+    }
+
+    const slaStatus = await slaService.checkSLAStatus(ticket);
+
+    res.json({ ticket, slaStatus });
+  } catch (error) {
+    console.error('Get ticket by ticket number error:', error);
     res.status(500).json({ error: 'Error al obtener ticket' });
   }
 };
@@ -395,7 +435,7 @@ const updateTicket = async (req, res) => {
   }
 };
 
-// Rate ticket (public)
+// Rate ticket (public) - kept for backward compatibility
 const rateTicket = async (req, res) => {
   try {
     const { token } = req.params;
@@ -419,6 +459,34 @@ const rateTicket = async (req, res) => {
     res.json({ message: 'Gracias por tu calificación' });
   } catch (error) {
     console.error('Rate ticket error:', error);
+    res.status(500).json({ error: 'Error al calificar ticket' });
+  }
+};
+
+// Rate ticket by ticket number (public)
+const rateTicketByNumber = async (req, res) => {
+  try {
+    const { ticketNumber } = req.params;
+    const { rating, comment } = req.body;
+
+    const ticket = await Ticket.findOne({ where: { ticketNumber: ticketNumber } });
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket no encontrado' });
+    }
+
+    if (ticket.status !== 'resolved' && ticket.status !== 'closed') {
+      return res.status(400).json({ error: 'Solo se pueden calificar tickets resueltos' });
+    }
+
+    await ticket.update({
+      satisfactionRating: rating,
+      satisfactionComment: comment
+    });
+
+    res.json({ message: 'Gracias por tu calificación' });
+  } catch (error) {
+    console.error('Rate ticket by number error:', error);
     res.status(500).json({ error: 'Error al calificar ticket' });
   }
 };
@@ -654,10 +722,12 @@ const getAgentRanking = async (req, res) => {
 module.exports = {
   createTicket,
   getTicketByToken,
+  getTicketByTicketNumber,
   getTickets,
   getTicket,
   updateTicket,
   rateTicket,
+  rateTicketByNumber,
   getTicketStats,
   getAgentRanking
 };

@@ -19,16 +19,16 @@ router.post('/',
   ticketController.createTicket
 );
 
-// Get ticket by access token (public)
-router.get('/track/:token', ticketController.getTicketByToken);
+// Get ticket by ticket number (public)
+router.get('/track/:ticketNumber', ticketController.getTicketByTicketNumber);
 
 // Rate ticket (public)
-router.post('/track/:token/rate',
+router.post('/track/:ticketNumber/rate',
   [
     body('rating').isInt({ min: 1, max: 5 }).withMessage('Calificacion debe ser entre 1 y 5')
   ],
   validate,
-  ticketController.rateTicket
+  ticketController.rateTicketByNumber
 );
 
 // Public ranking for TV display (no auth required)

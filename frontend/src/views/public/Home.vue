@@ -49,7 +49,7 @@
             Crear nuevo ticket
           </router-link>
           <button
-            @click="showTrackModal = true"
+            @click="openModal"
             class="px-8 py-4 bg-surface hover:bg-surface-hover text-white font-semibold rounded-xl border border-border transition-colors flex items-center justify-center gap-2"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,70 +103,121 @@
     <div
       v-if="showTrackModal"
       class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      @click.self="showTrackModal = false"
+      @click.self="closeModal"
     >
       <div class="bg-background-tertiary rounded-xl border border-border shadow-2xl max-w-md w-full p-6">
-        <h2 class="text-xl font-semibold text-white mb-4">Seguir mi ticket</h2>
+        <h2 class="text-xl font-semibold text-white mb-2">Seguir mi ticket</h2>
         <p class="text-gray-400 mb-4">
-          Ingresa el enlace que recibiste por email para ver tu ticket.
+          Ingresa el número de ticket que recibiste por email para ver el estado y chatear con nuestro equipo.
         </p>
-        <input
-          v-model="trackInput"
-          type="text"
-          placeholder="Pega el enlace de tu ticket aquí..."
-          class="w-full px-4 py-3 bg-surface border border-border rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-transparent mb-4"
-          @keyup.enter="trackTicket"
-        />
+
+        <div class="mb-4">
+          <label class="block text-sm text-gray-400 mb-2">Número de ticket</label>
+          <input
+            ref="trackInputRef"
+            v-model="trackInput"
+            type="text"
+            placeholder="Ej: CT-2025-00001"
+            class="w-full px-4 py-3 bg-surface border border-border rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-transparent text-lg tracking-wide"
+            @keyup.enter="trackTicket"
+          />
+          <p class="text-xs text-gray-500 mt-2">
+            Lo encuentras en el email que te enviamos al crear tu ticket
+          </p>
+        </div>
+
         <div class="flex gap-3">
           <button
-            @click="showTrackModal = false"
+            @click="closeModal"
             class="flex-1 px-4 py-3 border border-border text-gray-400 rounded-lg hover:bg-surface-hover transition-colors"
           >
             Cancelar
           </button>
           <button
             @click="trackTicket"
-            :disabled="!trackInput.trim()"
-            class="flex-1 px-4 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 transition-colors font-medium"
+            :disabled="!trackInput.trim() || searching"
+            class="flex-1 px-4 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 transition-colors font-medium flex items-center justify-center gap-2"
           >
-            Buscar
+            <svg v-if="searching" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ searching ? 'Buscando...' : 'Ver mi ticket' }}
           </button>
         </div>
-        <p v-if="trackError" class="mt-3 text-red-400 text-sm">{{ trackError }}</p>
+
+        <p v-if="trackError" class="mt-3 text-red-400 text-sm text-center">{{ trackError }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTicketStore } from '@/stores/tickets'
 
 const router = useRouter()
+const ticketStore = useTicketStore()
+
 const showTrackModal = ref(false)
 const trackInput = ref('')
 const trackError = ref('')
+const searching = ref(false)
+const trackInputRef = ref(null)
 
-function trackTicket() {
-  if (!trackInput.value.trim()) return
+function closeModal() {
+  showTrackModal.value = false
+  trackInput.value = ''
+  trackError.value = ''
+}
+
+async function trackTicket() {
+  if (!trackInput.value.trim() || searching.value) return
 
   trackError.value = ''
-  let token = trackInput.value.trim()
+  searching.value = true
 
-  // Extract token from URL if full URL provided
-  if (token.includes('/ticket/')) {
-    const match = token.match(/\/ticket\/([a-f0-9-]+)/i)
+  let ticketNumber = trackInput.value.trim().toUpperCase()
+
+  // Extract ticket number from URL if full URL provided
+  if (ticketNumber.includes('/TICKET/')) {
+    const match = ticketNumber.match(/\/TICKET\/(CT-\d{4}-\d+)/i)
     if (match) {
-      token = match[1]
+      ticketNumber = match[1]
     }
   }
 
-  // If it looks like a ticket number, we'd need to search - for now just try as token
-  if (token.match(/^CT-\d{4}-\d+$/i)) {
-    trackError.value = 'Por favor, usa el enlace completo que recibiste por email'
+  // If user entered just the number without CT- prefix, add it
+  if (ticketNumber.match(/^\d{4}-\d+$/)) {
+    ticketNumber = `CT-${ticketNumber}`
+  }
+
+  // Validate ticket number format
+  if (!ticketNumber.match(/^CT-\d{4}-\d+$/)) {
+    trackError.value = 'El número de ticket debe tener el formato CT-2025-00001'
+    searching.value = false
     return
   }
 
-  router.push(`/ticket/${token}`)
+  // Verify ticket exists
+  const result = await ticketStore.fetchTicketByTicketNumber(ticketNumber)
+
+  if (result.success) {
+    closeModal()
+    router.push(`/ticket/${ticketNumber}`)
+  } else {
+    trackError.value = 'No encontramos ese ticket. Verifica el número e intenta de nuevo.'
+  }
+
+  searching.value = false
+}
+
+// Auto-focus input when modal opens
+function openModal() {
+  showTrackModal.value = true
+  nextTick(() => {
+    trackInputRef.value?.focus()
+  })
 }
 </script>

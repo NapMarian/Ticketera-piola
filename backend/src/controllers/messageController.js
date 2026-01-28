@@ -2,20 +2,24 @@ const { Message, Ticket, User, TicketHistory } = require('../models');
 const emailService = require('../services/emailService');
 const notificationService = require('../services/notificationService');
 
-// Send message (staff or client via token)
+// Send message (staff or client via token or ticketNumber)
 const sendMessage = async (req, res) => {
   try {
     const { ticketId, content, isInternal = false } = req.body;
-    const { token } = req.query; // For client access
+    const { token, ticketNumber } = req.query; // For client access
 
     let ticket;
     let senderName;
     let senderType;
     let userId = null;
 
-    if (token) {
-      // Client sending message via access token
-      ticket = await Ticket.findOne({ where: { accessToken: token } });
+    if (token || ticketNumber) {
+      // Client sending message via access token or ticket number
+      if (token) {
+        ticket = await Ticket.findOne({ where: { accessToken: token } });
+      } else {
+        ticket = await Ticket.findOne({ where: { ticketNumber: ticketNumber } });
+      }
       if (!ticket) {
         return res.status(404).json({ error: 'Ticket no encontrado' });
       }
@@ -86,13 +90,17 @@ const sendMessage = async (req, res) => {
 const getMessages = async (req, res) => {
   try {
     const { ticketId } = req.params;
-    const { token } = req.query;
-    const { includeInternal = false } = req.query;
+    const { token, ticketNumber, includeInternal = false } = req.query;
 
     let ticket;
+    let isClientAccess = false;
 
     if (token) {
       ticket = await Ticket.findOne({ where: { accessToken: token } });
+      isClientAccess = true;
+    } else if (ticketNumber) {
+      ticket = await Ticket.findOne({ where: { ticketNumber: ticketNumber } });
+      isClientAccess = true;
     } else if (req.user) {
       ticket = await Ticket.findByPk(ticketId);
     }
@@ -104,7 +112,7 @@ const getMessages = async (req, res) => {
     const where = { ticketId: ticket.id };
 
     // Clients can't see internal messages
-    if (token || !includeInternal) {
+    if (isClientAccess || !includeInternal) {
       where.isInternal = false;
     }
 

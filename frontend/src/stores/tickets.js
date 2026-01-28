@@ -64,6 +64,22 @@ export const useTicketStore = defineStore('tickets', () => {
     }
   }
 
+  async function fetchTicketByTicketNumber(ticketNumber) {
+    loading.value = true
+    try {
+      const { data } = await api.get(`/tickets/track/${ticketNumber}`)
+      currentTicket.value = { ...data.ticket, slaStatus: data.slaStatus }
+      return { success: true, ticket: currentTicket.value }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Ticket no encontrado'
+      }
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function createTicket(ticketData) {
     loading.value = true
     try {
@@ -115,6 +131,18 @@ export const useTicketStore = defineStore('tickets', () => {
     }
   }
 
+  async function rateTicketByNumber(ticketNumber, rating, comment) {
+    try {
+      await api.post(`/tickets/track/${ticketNumber}/rate`, { rating, comment })
+      return { success: true }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Error al calificar'
+      }
+    }
+  }
+
   async function fetchStats(params = {}) {
     try {
       const { data } = await api.get('/tickets/stats', { params })
@@ -155,9 +183,11 @@ export const useTicketStore = defineStore('tickets', () => {
     fetchTickets,
     fetchTicket,
     fetchTicketByToken,
+    fetchTicketByTicketNumber,
     createTicket,
     updateTicket,
     rateTicket,
+    rateTicketByNumber,
     fetchStats,
     fetchRanking,
     clearCurrent

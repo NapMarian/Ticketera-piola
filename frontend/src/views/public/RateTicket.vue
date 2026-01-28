@@ -33,7 +33,7 @@
           Tu calificación nos ayuda a mejorar nuestro servicio.
         </p>
         <router-link
-          :to="`/ticket/${token}`"
+          :to="`/ticket/${ticketNumber}`"
           class="text-primary-500 hover:text-primary-400"
         >
           Ver mi ticket
@@ -105,7 +105,7 @@ import { useTicketStore } from '@/stores/tickets'
 const route = useRoute()
 const ticketStore = useTicketStore()
 
-const token = ref(route.params.token)
+const ticketNumber = ref(route.params.ticketNumber)
 const initialRating = ref(parseInt(route.params.rating) || 0)
 
 const selectedRating = ref(initialRating.value)
@@ -128,8 +128,8 @@ async function submitRating() {
   loading.value = true
   error.value = ''
 
-  const result = await ticketStore.rateTicket(
-    token.value,
+  const result = await ticketStore.rateTicketByNumber(
+    ticketNumber.value,
     selectedRating.value,
     comment.value || null
   )

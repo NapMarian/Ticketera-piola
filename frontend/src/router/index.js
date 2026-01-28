@@ -14,12 +14,12 @@ const routes = [
     component: () => import('@/views/public/NewTicket.vue')
   },
   {
-    path: '/ticket/:token',
+    path: '/ticket/:ticketNumber',
     name: 'track-ticket',
     component: () => import('@/views/public/TrackTicket.vue')
   },
   {
-    path: '/ticket/:token/rate/:rating',
+    path: '/ticket/:ticketNumber/rate/:rating',
     name: 'rate-ticket',
     component: () => import('@/views/public/RateTicket.vue')
   },

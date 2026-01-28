@@ -61,13 +61,23 @@ const syncDatabase = async (force = false) => {
     // In production, don't use alter to avoid issues with PostgreSQL constraints
     // In development, use alter to automatically update schema
     const isProduction = process.env.NODE_ENV === 'production';
+    const isSQLite = sequelize.getDialect() === 'sqlite';
+
+    // For SQLite, disable foreign keys during alter to avoid constraint issues
+    if (isSQLite && !isProduction) {
+      await sequelize.query('PRAGMA foreign_keys = OFF;');
+    }
+
     const syncOptions = force
       ? { force: true }
-      : isProduction
-        ? {} // Just create tables if they don't exist
-        : { alter: true }; // Update schema in development
+      : {}; // Just create tables if they don't exist (alter causes issues with SQLite)
 
     await sequelize.sync(syncOptions);
+
+    // Re-enable foreign keys for SQLite
+    if (isSQLite && !isProduction) {
+      await sequelize.query('PRAGMA foreign_keys = ON;');
+    }
     console.log('Database synchronized successfully');
 
     // Migration: Drop and recreate SLA table if it has old columns

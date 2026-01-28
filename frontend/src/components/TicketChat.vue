@@ -103,6 +103,10 @@ const props = defineProps({
     type: String,
     default: null
   },
+  ticketNumber: {
+    type: String,
+    default: null
+  },
   clientName: {
     type: String,
     default: ''
@@ -122,7 +126,12 @@ const isStaff = ref(!!authStore.user && ['admin', 'agent'].includes(authStore.us
 
 async function fetchMessages() {
   try {
-    const params = props.accessToken ? { token: props.accessToken } : {}
+    let params = {}
+    if (props.accessToken) {
+      params.token = props.accessToken
+    } else if (props.ticketNumber) {
+      params.ticketNumber = props.ticketNumber
+    }
     const { data } = await api.get(`/messages/${props.ticketId}`, { params })
     messages.value = data.messages
     scrollToBottom()
@@ -137,7 +146,12 @@ async function sendMessage() {
   sending.value = true
 
   try {
-    const endpoint = `/messages${props.accessToken ? `?token=${props.accessToken}` : ''}`
+    let endpoint = '/messages'
+    if (props.accessToken) {
+      endpoint += `?token=${props.accessToken}`
+    } else if (props.ticketNumber) {
+      endpoint += `?ticketNumber=${props.ticketNumber}`
+    }
     const payload = {
       ticketId: props.ticketId,
       content: newMessage.value.trim(),
@@ -233,7 +247,7 @@ onMounted(() => {
 
   // Connect socket and join room
   socketService.connect(authStore.token)
-  socketService.joinTicket(props.ticketId, props.accessToken)
+  socketService.joinTicket(props.ticketId, props.accessToken || props.ticketNumber)
 
   // Listen for events
   socketService.onNewMessage(handleNewMessage)
@@ -252,6 +266,6 @@ onUnmounted(() => {
 
 watch(() => props.ticketId, () => {
   fetchMessages()
-  socketService.joinTicket(props.ticketId, props.accessToken)
+  socketService.joinTicket(props.ticketId, props.accessToken || props.ticketNumber)
 })
 </script>

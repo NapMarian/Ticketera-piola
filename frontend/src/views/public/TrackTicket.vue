@@ -126,7 +126,7 @@
           <div class="lg:col-span-2 h-[600px]">
             <TicketChat
               :ticket-id="ticket.id"
-              :access-token="token"
+              :ticket-number="ticketNumber"
               :client-name="ticket.clientName"
             />
           </div>
@@ -147,7 +147,7 @@ const route = useRoute()
 const ticketStore = useTicketStore()
 const { getStatusLabel, getPriorityLabel, getStatusClass, getPriorityClass, formatDateTime } = useHelpers()
 
-const token = ref(route.params.token)
+const ticketNumber = ref(route.params.ticketNumber)
 const ticket = ref(null)
 const loading = ref(true)
 const error = ref(false)
@@ -167,7 +167,7 @@ function getHistoryText(entry) {
 }
 
 onMounted(async () => {
-  const result = await ticketStore.fetchTicketByToken(token.value)
+  const result = await ticketStore.fetchTicketByTicketNumber(ticketNumber.value)
 
   if (result.success) {
     ticket.value = result.ticket

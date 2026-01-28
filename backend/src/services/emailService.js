@@ -39,7 +39,7 @@ const emailTemplates = {
 
             <p>Puedes seguir el estado de tu ticket y comunicarte con nuestro equipo usando el siguiente enlace:</p>
 
-            <a href="${FRONTEND_URL}/ticket/${ticket.accessToken}" class="btn">Ver mi ticket</a>
+            <a href="${FRONTEND_URL}/ticket/${ticket.ticketNumber}" class="btn">Ver mi ticket</a>
 
             <p style="margin-top: 20px; color: #6b7280; font-size: 14px;">
               Guarda este correo, ya que contiene el enlace único para acceder a tu ticket.
@@ -79,7 +79,7 @@ const emailTemplates = {
             <p>Hola ${ticket.clientName},</p>
             <p>Tu ticket <strong>${ticket.ticketNumber}</strong> ha sido asignado a <strong>${agent.name}</strong>, quien se pondrá en contacto contigo pronto.</p>
 
-            <a href="${FRONTEND_URL}/ticket/${ticket.accessToken}" class="btn">Ver mi ticket</a>
+            <a href="${FRONTEND_URL}/ticket/${ticket.ticketNumber}" class="btn">Ver mi ticket</a>
           </div>
           <div class="footer">
             <p>Este es un correo automático de C-Team Ticketera.</p>
@@ -123,7 +123,7 @@ const emailTemplates = {
               <p>${message.content}</p>
             </div>
 
-            <a href="${FRONTEND_URL}/ticket/${ticket.accessToken}" class="btn">Responder</a>
+            <a href="${FRONTEND_URL}/ticket/${ticket.ticketNumber}" class="btn">Responder</a>
           </div>
           <div class="footer">
             <p>Este es un correo automático de C-Team Ticketera.</p>
@@ -165,12 +165,12 @@ const emailTemplates = {
 
             <div class="rating">
               ${[1, 2, 3, 4, 5].map(i =>
-                `<a href="${FRONTEND_URL}/ticket/${ticket.accessToken}/rate/${i}" class="star">★</a>`
+                `<a href="${FRONTEND_URL}/ticket/${ticket.ticketNumber}/rate/${i}" class="star">★</a>`
               ).join('')}
             </div>
 
             <p style="text-align: center;">
-              <a href="${FRONTEND_URL}/ticket/${ticket.accessToken}" class="btn">Ver ticket completo</a>
+              <a href="${FRONTEND_URL}/ticket/${ticket.ticketNumber}" class="btn">Ver ticket completo</a>
             </p>
 
             <p style="margin-top: 20px; color: #6b7280; font-size: 14px;">
