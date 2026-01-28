@@ -66,6 +66,9 @@
 
           <!-- Right side -->
           <div class="flex items-center gap-2">
+            <!-- Language selector -->
+            <LanguageSelector />
+
             <!-- Notifications -->
             <div class="relative">
               <button
@@ -265,6 +268,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
 import { useThemeStore } from '@/stores/theme'
 import NotificationDropdown from '@/components/NotificationDropdown.vue'
+import LanguageSelector from '@/components/LanguageSelector.vue'
 
 const route = useRoute()
 const router = useRouter()

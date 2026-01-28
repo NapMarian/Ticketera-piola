@@ -10,12 +10,15 @@
             class="h-12 w-auto"
           />
         </div>
-        <router-link
-          to="/login"
-          class="px-5 py-2.5 bg-surface hover:bg-surface-hover text-white border border-border rounded-lg transition-colors font-medium"
-        >
-          Iniciar Sesión
-        </router-link>
+        <div class="flex items-center gap-3">
+          <LanguageSelector />
+          <router-link
+            to="/login"
+            class="px-5 py-2.5 bg-surface hover:bg-surface-hover text-white border border-border rounded-lg transition-colors font-medium"
+          >
+            Iniciar Sesión
+          </router-link>
+        </div>
       </nav>
     </header>
 
@@ -156,6 +159,7 @@
 import { ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTicketStore } from '@/stores/tickets'
+import LanguageSelector from '@/components/LanguageSelector.vue'
 
 const router = useRouter()
 const ticketStore = useTicketStore()
