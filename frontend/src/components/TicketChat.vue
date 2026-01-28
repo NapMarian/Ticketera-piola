@@ -27,9 +27,23 @@
           ]"
         >
           <!-- Sender name -->
-          <p class="text-xs font-medium mb-1" :class="isOwnMessage(message) ? 'text-primary-100' : 'text-gray-500'">
-            {{ message.senderName || message.user?.name || 'Sistema' }}
-            <span v-if="message.isInternal" class="ml-1">(Nota interna)</span>
+          <p class="text-xs font-medium mb-1 flex items-center gap-2" :class="isOwnMessage(message) ? 'text-primary-100' : 'text-gray-400'">
+            <template v-if="isOwnMessage(message)">
+              Tú
+            </template>
+            <template v-else>
+              <!-- Agent/Staff message -->
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+                {{ message.user?.name || message.senderName || 'Soporte' }}
+                <span class="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 rounded-full font-medium">
+                  Soporte
+                </span>
+              </span>
+            </template>
+            <span v-if="message.isInternal" class="ml-1 text-yellow-400">(Nota interna)</span>
           </p>
 
           <!-- Content -->
@@ -196,11 +210,16 @@ function handleTyping() {
 }
 
 function isOwnMessage(message) {
+  // Staff viewing: check if message was sent by current staff user
   if (authStore.user) {
     return message.userId === authStore.user.id
   }
-  // For clients, check sender name
-  return message.senderName === props.clientName && message.senderType === 'client'
+  // Client viewing (public access): all client messages are "own" messages
+  // since the client is viewing their own ticket
+  if (props.accessToken || props.ticketNumber) {
+    return message.senderType === 'client'
+  }
+  return false
 }
 
 function formatTime(date) {
