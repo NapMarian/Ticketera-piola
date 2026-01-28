@@ -9,10 +9,10 @@
       >
         <option value="this_month">Este mes</option>
         <option value="last_month">Mes anterior</option>
-        <option value="last_3_months">Ultimos 3 meses</option>
-        <option value="last_6_months">Ultimos 6 meses</option>
-        <option value="this_year">Este ano</option>
-        <option value="last_year">Ano anterior</option>
+        <option value="last_3_months">Últimos 3 meses</option>
+        <option value="last_6_months">Últimos 6 meses</option>
+        <option value="this_year">Este año</option>
+        <option value="last_year">Año anterior</option>
         <option value="custom">Personalizado</option>
       </select>
       <svg class="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,9 +47,9 @@
         @change="emitChange"
         class="px-3 py-2 bg-surface border border-border rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500/50 focus:border-transparent appearance-none pr-8"
       >
-        <option value="none">Sin comparacion</option>
-        <option value="previous_period">Periodo anterior</option>
-        <option value="same_period_last_year">Mismo periodo ano anterior</option>
+        <option value="none">Sin comparación</option>
+        <option value="previous_period">Período anterior</option>
+        <option value="same_period_last_year">Mismo período año anterior</option>
       </select>
     </div>
 
