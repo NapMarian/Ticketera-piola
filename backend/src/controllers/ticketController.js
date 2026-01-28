@@ -182,6 +182,8 @@ const getTickets = async (req, res) => {
       assignedAgentId,
       clientId,
       search,
+      startDate,
+      endDate,
       page = 1,
       limit = 20,
       sortBy = 'createdAt',
@@ -194,6 +196,13 @@ const getTickets = async (req, res) => {
     if (priority) where.priority = priority;
     if (categoryId) where.categoryId = categoryId;
     if (clientId) where.clientId = clientId;
+
+    // Date filter
+    if (startDate || endDate) {
+      where.createdAt = {};
+      if (startDate) where.createdAt[Op.gte] = new Date(startDate);
+      if (endDate) where.createdAt[Op.lte] = new Date(endDate + 'T23:59:59');
+    }
 
     // Agents only see their assigned tickets, admins see all
     if (req.user.role === 'agent') {
@@ -598,18 +607,25 @@ const getTicketStats = async (req, res) => {
 
     const avgResponseTime = await sequelize.query(avgResponseQuery, { type: sequelize.QueryTypes.SELECT });
 
-    // Tickets created over time (last 30 days) - Database agnostic
-    const trendQuery = isPostgres
-      ? `SELECT DATE(created_at) as date, COUNT(*) as count
-         FROM tickets
-         WHERE created_at >= NOW() - INTERVAL '30 days'
-         GROUP BY DATE(created_at)
-         ORDER BY date ASC`
-      : `SELECT DATE(created_at) as date, COUNT(*) as count
-         FROM tickets
-         WHERE created_at >= datetime('now', '-30 days')
-         GROUP BY DATE(created_at)
-         ORDER BY date ASC`;
+    // Tickets created over time - respects date filter or defaults to last 30 days
+    let trendDateCondition;
+    if (startDate && endDate) {
+      trendDateCondition = `created_at >= '${startDate}' AND created_at <= '${endDate}T23:59:59'`;
+    } else if (startDate) {
+      trendDateCondition = `created_at >= '${startDate}'`;
+    } else if (endDate) {
+      trendDateCondition = `created_at <= '${endDate}T23:59:59'`;
+    } else {
+      trendDateCondition = isPostgres
+        ? `created_at >= NOW() - INTERVAL '30 days'`
+        : `created_at >= datetime('now', '-30 days')`;
+    }
+
+    const trendQuery = `SELECT DATE(created_at) as date, COUNT(*) as count
+       FROM tickets
+       WHERE ${trendDateCondition}
+       GROUP BY DATE(created_at)
+       ORDER BY date ASC`;
 
     const ticketsTrend = await sequelize.query(trendQuery, { type: sequelize.QueryTypes.SELECT });
 

@@ -14,6 +14,15 @@
       </router-link>
     </div>
 
+    <!-- Date Filter -->
+    <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border p-4 mb-4">
+      <DateRangeFilter
+        :show-comparison="false"
+        initial-preset="this_month"
+        @change="handleDateFilterChange"
+      />
+    </div>
+
     <!-- Filters -->
     <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border p-4 mb-6">
       <div class="flex flex-wrap gap-4">
@@ -191,6 +200,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import StaffLayout from '@/components/layouts/StaffLayout.vue'
+import DateRangeFilter from '@/components/DateRangeFilter.vue'
 import { useTicketStore } from '@/stores/tickets'
 import { useHelpers } from '@/composables/useHelpers'
 
@@ -201,7 +211,9 @@ const { getStatusLabel, getPriorityLabel, getStatusClass, getPriorityClass, time
 const filters = ref({
   search: '',
   status: '',
-  priority: ''
+  priority: '',
+  startDate: '',
+  endDate: ''
 })
 
 const tickets = computed(() => ticketStore.tickets)
@@ -212,6 +224,12 @@ const hasFilters = computed(() => {
 })
 
 let searchTimeout = null
+
+function handleDateFilterChange(dateFilter) {
+  filters.value.startDate = dateFilter.startDate
+  filters.value.endDate = dateFilter.endDate
+  loadTickets()
+}
 
 function debouncedSearch() {
   clearTimeout(searchTimeout)
@@ -225,7 +243,9 @@ function loadTickets(page = 1) {
     page,
     search: filters.value.search || undefined,
     status: filters.value.status || undefined,
-    priority: filters.value.priority || undefined
+    priority: filters.value.priority || undefined,
+    startDate: filters.value.startDate || undefined,
+    endDate: filters.value.endDate || undefined
   })
 }
 
@@ -247,6 +267,6 @@ function getInitials(name) {
 }
 
 onMounted(() => {
-  loadTickets()
+  // Initial load will be triggered by DateRangeFilter component
 })
 </script>

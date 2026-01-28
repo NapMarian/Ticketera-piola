@@ -1,5 +1,14 @@
 <template>
   <StaffLayout page-title="Dashboard">
+    <!-- Date Filter -->
+    <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border p-4 mb-6">
+      <DateRangeFilter
+        :show-comparison="true"
+        initial-preset="this_month"
+        @change="handleDateFilterChange"
+      />
+    </div>
+
     <!-- Stats cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border p-5">
@@ -7,6 +16,11 @@
           <div>
             <p class="text-sm text-gray-500">Tickets Abiertos</p>
             <p class="text-3xl font-bold text-white mt-1">{{ stats?.summary?.open || 0 }}</p>
+            <ComparisonBadge
+              v-if="comparisonStats"
+              :current="stats?.summary?.open"
+              :previous="comparisonStats?.summary?.open"
+            />
           </div>
           <div class="w-10 h-10 bg-primary-500/20 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -19,8 +33,13 @@
       <div class="bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border p-5">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-500">Resueltos este mes</p>
+            <p class="text-sm text-gray-500">Resueltos</p>
             <p class="text-3xl font-bold text-white mt-1">{{ stats?.summary?.resolved || 0 }}</p>
+            <ComparisonBadge
+              v-if="comparisonStats"
+              :current="stats?.summary?.resolved"
+              :previous="comparisonStats?.summary?.resolved"
+            />
           </div>
           <div class="w-10 h-10 bg-success/20 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,6 +56,13 @@
             <p class="text-3xl font-bold mt-1" :class="getSLAColor(stats?.sla?.compliance)">
               {{ stats?.sla?.compliance || 100 }}%
             </p>
+            <ComparisonBadge
+              v-if="comparisonStats"
+              :current="stats?.sla?.compliance"
+              :previous="comparisonStats?.sla?.compliance"
+              suffix="%"
+              :invert="false"
+            />
           </div>
           <div class="w-10 h-10 bg-accent-500/20 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,6 +79,13 @@
             <p class="text-3xl font-bold text-white mt-1">
               {{ formatResponseTime(stats?.avgResponseTimeMinutes) }}
             </p>
+            <ComparisonBadge
+              v-if="comparisonStats"
+              :current="stats?.avgResponseTimeMinutes"
+              :previous="comparisonStats?.avgResponseTimeMinutes"
+              suffix="min"
+              :invert="true"
+            />
           </div>
           <div class="w-10 h-10 bg-cteam-orange/20 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-cteam-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,6 +181,8 @@ import {
 } from 'chart.js'
 import { Doughnut, Bar, Line } from 'vue-chartjs'
 import StaffLayout from '@/components/layouts/StaffLayout.vue'
+import DateRangeFilter from '@/components/DateRangeFilter.vue'
+import ComparisonBadge from '@/components/ComparisonBadge.vue'
 import { useTicketStore } from '@/stores/tickets'
 import { useHelpers } from '@/composables/useHelpers'
 
@@ -168,7 +203,9 @@ const ticketStore = useTicketStore()
 const { getStatusLabel } = useHelpers()
 
 const stats = ref(null)
+const comparisonStats = ref(null)
 const ranking = ref([])
+const currentDateFilter = ref(null)
 
 const chartOptions = {
   responsive: true,
@@ -298,10 +335,18 @@ function getInitials(name) {
   return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
 }
 
-onMounted(async () => {
+async function handleDateFilterChange(filter) {
+  currentDateFilter.value = filter
+
+  // Fetch main stats
+  const statsParams = {
+    startDate: filter.startDate,
+    endDate: filter.endDate
+  }
+
   const [statsResult, rankingResult] = await Promise.all([
-    ticketStore.fetchStats(),
-    ticketStore.fetchRanking()
+    ticketStore.fetchStats(statsParams),
+    ticketStore.fetchRanking(statsParams)
   ])
 
   if (statsResult.success) {
@@ -311,5 +356,24 @@ onMounted(async () => {
   if (rankingResult.success) {
     ranking.value = rankingResult.ranking
   }
+
+  // Fetch comparison stats if comparison mode is active
+  if (filter.comparisonStartDate && filter.comparisonEndDate) {
+    const comparisonParams = {
+      startDate: filter.comparisonStartDate,
+      endDate: filter.comparisonEndDate
+    }
+
+    const compResult = await ticketStore.fetchStats(comparisonParams)
+    if (compResult.success) {
+      comparisonStats.value = compResult.stats
+    }
+  } else {
+    comparisonStats.value = null
+  }
+}
+
+onMounted(async () => {
+  // Initial load will be triggered by DateRangeFilter component
 })
 </script>
