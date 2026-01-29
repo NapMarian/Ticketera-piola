@@ -2,9 +2,9 @@
   <div class="flex flex-col h-full bg-background-secondary/50 backdrop-blur-sm rounded-xl border border-border">
     <!-- Chat header -->
     <div class="flex items-center justify-between px-4 py-3 border-b border-border">
-      <h3 class="font-semibold text-white">Conversacion</h3>
+      <h3 class="font-semibold text-white">{{ t('tickets.conversation') }}</h3>
       <span v-if="typingUser" class="text-sm text-gray-500 italic">
-        {{ typingUser }} esta escribiendo...
+        {{ typingUser }} {{ t('chat.isTyping') }}
       </span>
     </div>
 
@@ -29,7 +29,7 @@
           <!-- Sender name -->
           <p class="text-xs font-medium mb-1 flex items-center gap-2" :class="isOwnMessage(message) ? 'text-primary-100' : 'text-gray-400'">
             <template v-if="isOwnMessage(message)">
-              Tú
+              {{ t('chat.you') }}
             </template>
             <template v-else-if="message.senderType === 'agent'">
               <!-- Agent/Staff message -->
@@ -37,9 +37,9 @@
                 <svg class="w-3.5 h-3.5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                 </svg>
-                {{ message.user?.name || message.senderName || 'Soporte' }}
+                {{ message.user?.name || message.senderName || t('chat.support') }}
                 <span class="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 rounded-full font-medium">
-                  Soporte
+                  {{ t('chat.support') }}
                 </span>
               </span>
             </template>
@@ -49,13 +49,13 @@
                 <svg class="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                 </svg>
-                {{ message.senderName || 'Cliente' }}
+                {{ message.senderName || t('chat.client') }}
                 <span class="px-1.5 py-0.5 text-[10px] bg-blue-500/20 text-blue-400 rounded-full font-medium">
-                  Cliente
+                  {{ t('chat.client') }}
                 </span>
               </span>
             </template>
-            <span v-if="message.isInternal" class="ml-1 text-yellow-400">(Nota interna)</span>
+            <span v-if="message.isInternal" class="ml-1 text-yellow-400">({{ t('chat.internalNote') }})</span>
           </p>
 
           <!-- Content -->
@@ -69,7 +69,7 @@
       </div>
 
       <div v-if="messages.length === 0" class="text-center text-gray-500 py-8">
-        No hay mensajes aun
+        {{ t('tickets.noMessages') }}
       </div>
     </div>
 
@@ -83,7 +83,7 @@
             v-model="isInternal"
             class="rounded border-border text-primary-500 focus:ring-primary-500/50"
           />
-          <span>Nota interna (no visible para el cliente)</span>
+          <span>{{ t('tickets.internalNote') }}</span>
         </label>
       </div>
 
@@ -92,7 +92,7 @@
           v-model="newMessage"
           @keydown.enter.exact.prevent="sendMessage"
           @input="handleTyping"
-          placeholder="Escribe tu mensaje..."
+          :placeholder="t('tickets.typeMessage')"
           rows="2"
           class="flex-1 resize-none rounded-lg bg-surface border border-border text-white px-3 py-2 focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
         />
@@ -116,9 +116,12 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import api from '@/services/api'
 import socketService from '@/services/socket'
 import { useAuthStore } from '@/stores/auth'
+
+const { t, locale } = useI18n({ useScope: 'global' })
 
 const props = defineProps({
   ticketId: {
@@ -238,7 +241,8 @@ function isOwnMessage(message) {
 }
 
 function formatTime(date) {
-  return new Date(date).toLocaleString('es-ES', {
+  const localeCode = locale.value === 'es' ? 'es-ES' : 'en-US'
+  return new Date(date).toLocaleString(localeCode, {
     day: '2-digit',
     month: '2-digit',
     hour: '2-digit',

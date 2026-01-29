@@ -31,7 +31,7 @@
 
         <!-- Admin section -->
         <div v-if="authStore.isAdmin" class="mt-6 pt-4 border-t border-border">
-          <p class="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Administracion</p>
+          <p class="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ t('nav.admin') }}</p>
           <router-link
             v-for="item in adminMenuItems"
             :key="item.to"
@@ -131,7 +131,7 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                   </svg>
-                  Mi perfil
+                  {{ t('nav.myProfile') }}
                 </button>
                 <button
                   @click="logout"
@@ -140,7 +140,7 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                   </svg>
-                  Cerrar sesion
+                  {{ t('nav.logout') }}
                 </button>
               </div>
             </div>
@@ -264,11 +264,14 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
 import { useThemeStore } from '@/stores/theme'
 import NotificationDropdown from '@/components/NotificationDropdown.vue'
 import LanguageSelector from '@/components/LanguageSelector.vue'
+
+const { t } = useI18n({ useScope: 'global' })
 
 const route = useRoute()
 const router = useRouter()
@@ -346,20 +349,20 @@ const BuildingIcon = () => h('svg', { class: 'w-5 h-5', fill: 'none', stroke: 'c
   h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' })
 ])
 
-const menuItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: DashboardIcon },
-  { to: '/tickets', label: 'Tickets', icon: TicketIcon },
-  { to: '/canned-responses', label: 'Respuestas', icon: ResponseIcon },
-  { to: '/staff/ranking', label: 'Ranking', icon: RankingIcon }
-]
+const menuItems = computed(() => [
+  { to: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon },
+  { to: '/tickets', label: t('nav.tickets'), icon: TicketIcon },
+  { to: '/canned-responses', label: t('nav.responses'), icon: ResponseIcon },
+  { to: '/staff/ranking', label: t('nav.ranking'), icon: RankingIcon }
+])
 
-const adminMenuItems = [
-  { to: '/admin/users', label: 'Usuarios', icon: UsersIcon },
-  { to: '/admin/clients', label: 'Clientes', icon: BuildingIcon },
-  { to: '/admin/categories', label: 'Categorias', icon: CategoryIcon },
-  { to: '/admin/sla', label: 'SLAs', icon: SLAIcon },
-  { to: '/admin/holidays', label: 'Feriados', icon: CalendarIcon }
-]
+const adminMenuItems = computed(() => [
+  { to: '/admin/users', label: t('nav.users'), icon: UsersIcon },
+  { to: '/admin/clients', label: t('nav.clients'), icon: BuildingIcon },
+  { to: '/admin/categories', label: t('nav.categories'), icon: CategoryIcon },
+  { to: '/admin/sla', label: t('nav.sla'), icon: SLAIcon },
+  { to: '/admin/holidays', label: t('nav.holidays'), icon: CalendarIcon }
+])
 
 const userInitials = computed(() => {
   const name = authStore.user?.name || ''

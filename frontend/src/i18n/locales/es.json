@@ -28,9 +28,11 @@
     "clients": "Clientes",
     "users": "Usuarios",
     "categories": "Categorías",
-    "sla": "SLA",
+    "sla": "SLAs",
     "holidays": "Feriados",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "admin": "Administración",
+    "myProfile": "Mi perfil"
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -232,5 +234,28 @@
     "invalidCredentials": "Credenciales inválidas",
     "required": "Este campo es requerido",
     "invalidEmail": "Email inválido"
+  },
+  "home": {
+    "login": "Iniciar Sesión",
+    "supportCenter": "Centro de",
+    "support": "Soporte",
+    "heroText": "Estamos aquí para ayudarte. Crea un ticket y nuestro equipo te responderá lo antes posible.",
+    "newTicket": "Crear nuevo ticket",
+    "trackMyTicket": "Seguir mi ticket",
+    "fastResponse": "Respuesta Rápida",
+    "fastResponseDesc": "Nuestro equipo responde según acuerdos de SLA garantizados.",
+    "liveChat": "Chat en Vivo",
+    "liveChatDesc": "Comunícate directamente con el agente asignado a tu caso.",
+    "easyTracking": "Seguimiento Fácil",
+    "easyTrackingDesc": "Sigue el estado de tu ticket con un simple enlace, sin cuenta.",
+    "copyright": "Todos los derechos reservados.",
+    "trackModalTitle": "Seguir mi ticket",
+    "trackModalDesc": "Ingresa el número de ticket que recibiste por email para ver el estado y chatear con nuestro equipo.",
+    "ticketNumberLabel": "Número de ticket",
+    "ticketNumberPlaceholder": "Ej: CT-2025-00001",
+    "ticketNumberHint": "Lo encuentras en el email que te enviamos al crear tu ticket",
+    "viewMyTicket": "Ver mi ticket",
+    "invalidFormat": "El número de ticket debe tener el formato CT-2025-00001",
+    "ticketNotFoundError": "No encontramos ese ticket. Verifica el número e intenta de nuevo."
   }
 }

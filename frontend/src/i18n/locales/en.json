@@ -28,9 +28,11 @@
     "clients": "Clients",
     "users": "Users",
     "categories": "Categories",
-    "sla": "SLA",
+    "sla": "SLAs",
     "holidays": "Holidays",
-    "logout": "Logout"
+    "logout": "Logout",
+    "admin": "Administration",
+    "myProfile": "My Profile"
   },
   "auth": {
     "login": "Login",
@@ -232,5 +234,28 @@
     "invalidCredentials": "Invalid credentials",
     "required": "This field is required",
     "invalidEmail": "Invalid email"
+  },
+  "home": {
+    "login": "Sign In",
+    "supportCenter": "",
+    "support": "Support Center",
+    "heroText": "We're here to help. Create a ticket and our team will respond as soon as possible.",
+    "newTicket": "Create new ticket",
+    "trackMyTicket": "Track my ticket",
+    "fastResponse": "Fast Response",
+    "fastResponseDesc": "Our team responds according to guaranteed SLA agreements.",
+    "liveChat": "Live Chat",
+    "liveChatDesc": "Communicate directly with the agent assigned to your case.",
+    "easyTracking": "Easy Tracking",
+    "easyTrackingDesc": "Track your ticket status with a simple link, no account needed.",
+    "copyright": "All rights reserved.",
+    "trackModalTitle": "Track my ticket",
+    "trackModalDesc": "Enter the ticket number you received by email to see the status and chat with our team.",
+    "ticketNumberLabel": "Ticket number",
+    "ticketNumberPlaceholder": "Ex: CT-2025-00001",
+    "ticketNumberHint": "You can find it in the email we sent when you created your ticket",
+    "viewMyTicket": "View my ticket",
+    "invalidFormat": "The ticket number must have the format CT-2025-00001",
+    "ticketNotFoundError": "We couldn't find that ticket. Please check the number and try again."
   }
 }

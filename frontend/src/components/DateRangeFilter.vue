@@ -7,13 +7,13 @@
         @change="applyPreset"
         class="px-3 py-2 bg-surface border border-border rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500/50 focus:border-transparent appearance-none pr-8 min-w-[160px]"
       >
-        <option value="this_month">Este mes</option>
-        <option value="last_month">Mes anterior</option>
-        <option value="last_3_months">Últimos 3 meses</option>
-        <option value="last_6_months">Últimos 6 meses</option>
-        <option value="this_year">Este año</option>
-        <option value="last_year">Año anterior</option>
-        <option value="custom">Personalizado</option>
+        <option value="this_month">{{ t('dateFilter.thisMonth') }}</option>
+        <option value="last_month">{{ t('dateFilter.lastMonth') }}</option>
+        <option value="last_3_months">{{ t('dateFilter.last3Months') }}</option>
+        <option value="last_6_months">{{ t('dateFilter.last6Months') }}</option>
+        <option value="this_year">{{ t('dateFilter.thisYear') }}</option>
+        <option value="last_year">{{ t('dateFilter.lastYear') }}</option>
+        <option value="custom">{{ t('dateFilter.custom') }}</option>
       </select>
       <svg class="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -29,7 +29,7 @@
           @change="applyCustomDates"
           class="px-3 py-2 bg-surface border border-border rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500/50 focus:border-transparent"
         />
-        <span class="text-gray-400">a</span>
+        <span class="text-gray-400">-</span>
         <input
           type="date"
           v-model="customEndDate"
@@ -41,24 +41,24 @@
 
     <!-- Comparison toggle -->
     <div v-if="showComparison" class="flex items-center gap-2">
-      <span class="text-gray-400 text-sm">Comparar con:</span>
+      <span class="text-gray-400 text-sm">{{ t('dateFilter.compareWith') }}</span>
       <select
         v-model="comparisonMode"
         @change="emitChange"
         class="px-3 py-2 bg-surface border border-border rounded-lg text-white text-sm focus:ring-2 focus:ring-primary-500/50 focus:border-transparent appearance-none pr-8"
       >
-        <option value="none">Sin comparación</option>
-        <option value="previous_period">Período anterior</option>
-        <option value="same_period_last_year">Mismo período año anterior</option>
+        <option value="none">{{ t('dateFilter.noComparison') }}</option>
+        <option value="previous_period">{{ t('dateFilter.previousPeriod') }}</option>
+        <option value="same_period_last_year">{{ t('dateFilter.samePeriodLastYear') }}</option>
       </select>
     </div>
 
     <!-- Current range display -->
     <div class="text-sm text-gray-400 ml-2">
-      <span class="text-gray-500">Mostrando:</span>
+      <span class="text-gray-500">{{ t('dateFilter.showing') }}</span>
       {{ formatDateRange(startDate, endDate) }}
       <template v-if="comparisonMode !== 'none' && comparisonStartDate">
-        <span class="text-primary-400 ml-2">vs</span>
+        <span class="text-primary-400 ml-2">{{ t('dateFilter.vs') }}</span>
         {{ formatDateRange(comparisonStartDate, comparisonEndDate) }}
       </template>
     </div>
@@ -67,6 +67,9 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n({ useScope: 'global' })
 
 const props = defineProps({
   showComparison: {
@@ -162,9 +165,10 @@ function formatDate(date) {
 
 function formatDateRange(start, end) {
   if (!start || !end) return ''
+  const localeCode = locale.value === 'es' ? 'es-ES' : 'en-US'
   const options = { day: '2-digit', month: 'short' }
-  const startStr = start.toLocaleDateString('es-ES', options)
-  const endStr = end.toLocaleDateString('es-ES', { ...options, year: 'numeric' })
+  const startStr = start.toLocaleDateString(localeCode, options)
+  const endStr = end.toLocaleDateString(localeCode, { ...options, year: 'numeric' })
   return `${startStr} - ${endStr}`
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <StaffLayout page-title="Tickets">
+  <StaffLayout :page-title="t('tickets.title')">
     <!-- Header with New Ticket button -->
     <div class="flex justify-between items-center mb-6">
       <div></div>
@@ -10,7 +10,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
-        Nuevo Ticket
+        {{ t('tickets.newTicket') }}
       </router-link>
     </div>
 
@@ -31,7 +31,7 @@
           <input
             v-model="filters.search"
             type="text"
-            placeholder="Buscar por numero, titulo, cliente..."
+            :placeholder="t('tickets.searchPlaceholder')"
             class="w-full px-4 py-2 bg-surface border border-border rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors"
             @input="debouncedSearch"
           />
@@ -43,12 +43,12 @@
           @change="loadTickets"
           class="px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
         >
-          <option value="">Todos los estados</option>
-          <option value="new">Nuevo</option>
-          <option value="in_progress">En Progreso</option>
-          <option value="waiting">En Espera</option>
-          <option value="resolved">Resuelto</option>
-          <option value="closed">Cerrado</option>
+          <option value="">{{ t('tickets.allStatuses') }}</option>
+          <option value="new">{{ t('status.new') }}</option>
+          <option value="in_progress">{{ t('status.in_progress') }}</option>
+          <option value="waiting">{{ t('status.waiting') }}</option>
+          <option value="resolved">{{ t('status.resolved') }}</option>
+          <option value="closed">{{ t('status.closed') }}</option>
         </select>
 
         <!-- Priority filter -->
@@ -57,11 +57,11 @@
           @change="loadTickets"
           class="px-4 py-2 bg-surface border border-border rounded-lg text-white focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500"
         >
-          <option value="">Todas las prioridades</option>
-          <option value="urgent">Urgente</option>
-          <option value="high">Alta</option>
-          <option value="medium">Media</option>
-          <option value="low">Baja</option>
+          <option value="">{{ t('tickets.allPriorities') }}</option>
+          <option value="urgent">{{ t('priority.urgent') }}</option>
+          <option value="high">{{ t('priority.high') }}</option>
+          <option value="medium">{{ t('priority.medium') }}</option>
+          <option value="low">{{ t('priority.low') }}</option>
         </select>
 
         <!-- Clear filters -->
@@ -70,7 +70,7 @@
           @click="clearFilters"
           class="px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm"
         >
-          Limpiar filtros
+          {{ t('common.clearFilters') }}
         </button>
       </div>
     </div>
@@ -83,7 +83,7 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
         </svg>
-        <p class="text-gray-500">Cargando tickets...</p>
+        <p class="text-gray-500">{{ t('common.loading') }}</p>
       </div>
 
       <!-- Empty state -->
@@ -93,20 +93,20 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
           </svg>
         </div>
-        <p class="text-gray-500">No se encontraron tickets</p>
+        <p class="text-gray-500">{{ t('tickets.noTicketsFound') }}</p>
       </div>
 
       <!-- Table -->
       <table v-else class="w-full">
         <thead class="border-b border-border">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prioridad</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Agente</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('tickets.ticketNumber') }}</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('tickets.client') }}</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('tickets.status') }}</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('tickets.priority') }}</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('tickets.assignedAgent') }}</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SLA</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t('tickets.createdAt') }}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-border">
@@ -151,7 +151,7 @@
                 </div>
                 <span class="text-sm text-gray-300">{{ ticket.agent.name }}</span>
               </div>
-              <span v-else class="text-sm text-gray-600">Sin asignar</span>
+              <span v-else class="text-sm text-gray-600">{{ t('tickets.unassigned') }}</span>
             </td>
             <td class="px-4 py-4">
               <span
@@ -172,8 +172,8 @@
       <!-- Pagination -->
       <div v-if="pagination.totalPages > 1" class="px-4 py-3 border-t border-border flex items-center justify-between">
         <p class="text-sm text-gray-500">
-          Mostrando {{ (pagination.page - 1) * pagination.limit + 1 }} -
-          {{ Math.min(pagination.page * pagination.limit, pagination.total) }} de {{ pagination.total }}
+          {{ t('common.showing') }} {{ (pagination.page - 1) * pagination.limit + 1 }} -
+          {{ Math.min(pagination.page * pagination.limit, pagination.total) }} {{ t('common.of') }} {{ pagination.total }}
         </p>
         <div class="flex gap-2">
           <button
@@ -181,14 +181,14 @@
             :disabled="pagination.page === 1"
             class="px-3 py-1 bg-surface border border-border rounded text-sm text-gray-300 disabled:opacity-50 hover:bg-surface-hover transition-colors"
           >
-            Anterior
+            {{ t('common.previous') }}
           </button>
           <button
             @click="changePage(pagination.page + 1)"
             :disabled="pagination.page === pagination.totalPages"
             class="px-3 py-1 bg-surface border border-border rounded text-sm text-gray-300 disabled:opacity-50 hover:bg-surface-hover transition-colors"
           >
-            Siguiente
+            {{ t('common.next') }}
           </button>
         </div>
       </div>
@@ -199,11 +199,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import StaffLayout from '@/components/layouts/StaffLayout.vue'
 import DateRangeFilter from '@/components/DateRangeFilter.vue'
 import { useTicketStore } from '@/stores/tickets'
 import { useHelpers } from '@/composables/useHelpers'
 
+const { t } = useI18n({ useScope: 'global' })
 const router = useRouter()
 const ticketStore = useTicketStore()
 const { getStatusLabel, getPriorityLabel, getStatusClass, getPriorityClass, timeAgo } = useHelpers()
